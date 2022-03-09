@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
-import About from "../views/About.vue";
 import Home from "../views/Home.vue";
+import Furswap from "../views/Furswap.vue";
+import Vault from "../views/Vault.vue";
+import Liquidity from "../views/Liquidity.vue";
 import NotFound from "../views/NotFound.vue";
 
 const routes = [
@@ -10,9 +12,19 @@ const routes = [
         component: Home,
     },
     {
-        path: "/about",
-        name: "About",
-        component: About,
+        path: "/furswap",
+        name: "Furswap",
+        component: Furswap,
+    },
+    {
+        path: "/vault",
+        name: "Vault",
+        component: Vault,
+    },
+    {
+        path: "/liquidity",
+        name: "Liquidity",
+        component: Liquidity,
     },
     {
         path: "/:catchAll(.*)",

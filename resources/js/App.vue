@@ -2,7 +2,7 @@
     <!-- BEGIN NAVIGATION -->
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
         <div class="container-fluid">
-            <router-link :to="{ name: 'Home' }" class="navbar-brand">Brand</router-link>
+            <router-link :to="{ name: 'Home' }" class="navbar-brand">Furio</router-link>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -10,20 +10,26 @@
                 <!-- BEGIN PRIMARY NAVIGATION -->
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <router-link :to="{ name: 'Home' }" class="nav-link" active-class="active">Home</router-link>
+                        <router-link :to="{ name: 'Furswap' }" class="nav-link" active-class="active">Furswap</router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link :to="{ name: 'About' }" class="nav-link" active-class="active">About</router-link>
+                        <router-link :to="{ name: 'Vault' }" class="nav-link" active-class="active">Vault</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link :to="{ name: 'Liquidity' }" class="nav-link" active-class="active">Liquidity</router-link>
                     </li>
                 </ul>
                 <!-- END PRIMARY NAVIGATION -->
                 <div class="d-flex">
                     <!-- BEGIN SECONDARY NAVIGATION -->
-                    <!--<ul class="navbar-nav">
+                    <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Secondary item</a>
+                            <a class="nav-link" href="https://furio.io/whitepaper" target="_new">Whitepaper</a>
                         </li>
-                    </ul>-->
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://youtu.be/TOJg308iREw" target="_new">Tutorial</a>
+                        </li>
+                    </ul>
                     <!-- END SECONDARY NAVIGATION -->
                     <!-- BEGIN WALLET BUTTONS -->
                     <button v-show="!connected" class="btn btn-sm btn-primary mx-1" data-bs-toggle="modal" data-bs-target="#connect">Connect Wallet</button>
@@ -73,7 +79,7 @@
                             </meta-mask>
                         </div>
                         <div class="col-md text-center">
-                            <wallet-connect type="button" data-bs-dismiss="modal" rpc="" ref="wallet-connect">
+                            <wallet-connect type="button" data-bs-dismiss="modal" :chain-id="networkId" :rpc="rpc" ref="wallet-connect">
                                 <img class="img-fluid" src="/images/walletconnect.svg" alt="walletconnect">
                             </wallet-connect>
                         </div>
@@ -101,6 +107,7 @@
         props: [
             'networkId',
             'networkName',
+            'rpc',
         ],
         data() {
             return {
@@ -109,6 +116,7 @@
                 wallet: null,
                 web3: new Web3(),
                 account: null,
+                balance: null,
                 address: null,
                 connected: false,
                 loggedIn: false,
@@ -145,6 +153,7 @@
                     }
                     const connectedId = await ping.web3.eth.net.getId();
                     if(connectedId != ping.networkId) {
+                        alert(connectedId);
                         ping.alert = 'Incorrect network. Please connect to ' + ping.networkName;
                         ping.disconnect();
                     }
