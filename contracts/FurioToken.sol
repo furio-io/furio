@@ -16,10 +16,17 @@ contract FurioToken is ERC20PresetMinterPauser {
     /**
      * MINTING.
      */
+    // properties.
     uint256 public mintedSupply;
     bool public mintingFinished = false;
+    // events.
     event Mint(address indexed to, uint256 amount);
     event MintFinished();
+    // modifiers.
+    modifier canMint() {
+        require(!mintingFinished, "Minting has finished");
+        _;
+    }
 
     /**
      * Remaining mintable supply.
