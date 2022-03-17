@@ -5,7 +5,7 @@ pragma solidity >=0.6.0;
 import "../contracts/FurioNFT.sol";
 
 contract $FurioNFT is FurioNFT {
-    constructor(string memory name_, string memory symbol_, string memory description_, string memory imageUri_, uint256 maxSupply_, uint256 price_, uint256 salesTax_, address tokenAddress_) FurioNFT(name_, symbol_, description_, imageUri_, maxSupply_, price_, salesTax_, tokenAddress_) {}
+    constructor(address paymentToken_) FurioNFT(paymentToken_) {}
 
     function $_baseURI() external view returns (string memory) {
         return super._baseURI();

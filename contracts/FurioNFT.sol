@@ -25,18 +25,12 @@ contract FurioNFT is Ownable, ERC721 {
     /**
      * Price.
      */
-    uint256 public price;
+    uint256 public price = 5;
 
     /**
      * Sales Tax.
      */
-    uint256 public salesTax;
-
-    /**
-     * Token values.
-     * @dev keep track of original sales price for buy backs in case price changes.
-     */
-    mapping(uint256 => uint256) private _tokenValues;
+    uint256 public tax = 1;
 
     /**
      * Generation struct.
@@ -74,20 +68,9 @@ contract FurioNFT is Ownable, ERC721 {
     /**
      * Contract constructor.
      */
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        string memory description_,
-        string memory imageUri_,
-        uint256 maxSupply_,
-        uint256 price_,
-        uint256 salesTax_,
-        address paymentToken_
-    ) ERC721(name_, symbol_) {
-        createGeneration(maxSupply_, description_, imageUri_);
-        setPrice(price_);
-        setSalesTax(salesTax_);
-        setPaymentToken(paymentToken_);
+    constructor(address paymentToken_) ERC721('Furio NFT', 'FNFT') {
+        createGeneration(10000, 'some description', 'ipfs://something');
+        paymentToken = IERC20(paymentToken_);
     }
 
     /**
@@ -107,7 +90,6 @@ contract FurioNFT is Ownable, ERC721 {
         for(uint256 i = 1; i <= quantity_; i ++) {
             _tokenIdTracker.increment();
             _mint(msg.sender, _tokenIdTracker.current());
-            _tokenValues[_tokenIdTracker.current()] = price;
         }
     }
 
@@ -119,9 +101,7 @@ contract FurioNFT is Ownable, ERC721 {
      */
     function sell(uint256 tokenId_) external {
         require(msg.sender == ERC721.ownerOf(tokenId_), "Sender does not own token");
-        uint256 tax = _tokenValues[tokenId_] * salesTax / 100;
-        uint256 value = _tokenValues[tokenId_] - tax;
-        require(paymentToken.transfer(msg.sender, value), "Payment failed");
+        require(paymentToken.transfer(msg.sender, price - tax), "Payment failed");
         // burn NFT
         _burn(tokenId_);
         // burn tax
@@ -185,7 +165,9 @@ contract FurioNFT is Ownable, ERC721 {
                 Base64.encode(
                     bytes(
                         abi.encodePacked(
-                            '{"name":"Furio NFT #',
+                            '{"name":"',
+                            name(),
+                            ' #',
                             tokenId_,
                             '","description":"',
                             _generations[_tokenGenerations[tokenId_]].description,
@@ -223,31 +205,5 @@ contract FurioNFT is Ownable, ERC721 {
         _generations[_g].maxSupply = maxSupply_;
         _generations[_g].description = description_;
         _generations[_g].imageUri = imageUri_;
-    }
-
-    /**
-     * Set price
-     * @param price_ New price.
-     * @notice Update the price for buying NFTs.
-     */
-    function setPrice(uint256 price_) public onlyOwner {
-        price = price_;
-    }
-
-    /**
-     * Set sales tax.
-     * @param salesTax_ New tax rate.
-     * @notice Update the tax rate for buybacks.
-     */
-    function setSalesTax(uint256 salesTax_) public onlyOwner {
-        salesTax = salesTax_;
-    }
-    /**
-     * Set payment token.
-     * @param paymentToken_ Address of new token.
-     * @notice Update payment token to ERC20 at paymentToken_ address.
-     */
-    function setPaymentToken(address paymentToken_) public onlyOwner {
-        paymentToken = IERC20(paymentToken_);
     }
 }
