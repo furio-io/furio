@@ -3,6 +3,7 @@ let tagManagerContainerId = document.head.querySelector('meta[name="tag-manager-
 let networkId = document.head.querySelector('meta[name="network-id"]');
 let networkName = document.head.querySelector('meta[name="network-name"]');
 let rpc = document.head.querySelector('meta[name="rpc"]');
+let recaptcha = document.head.querySelector('meta[name="recaptcha"]');
 // Bootstrap
 import "bootstrap";
 // Axios
@@ -21,10 +22,12 @@ window.analytics = Analytics({
 });
 // Vue
 import { createApp } from "vue";
+import { VueReCaptcha } from "vue-recaptcha-v3";
 import App from "./App.vue";
 import router from "./router";
 createApp(App, {
     networkId: networkId.content,
     networkName: networkName.content,
     rpc: rpc.content,
-}).use(router).mount('#app');
+    recaptcha: recaptcha.content,
+}).use(router).use(VueReCaptcha).mount('#app');

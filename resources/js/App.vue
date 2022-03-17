@@ -108,6 +108,7 @@
             'networkId',
             'networkName',
             'rpc',
+            'recaptcha',
         ],
         data() {
             return {

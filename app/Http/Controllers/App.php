@@ -16,6 +16,7 @@ class App extends Controller
             'networkId' => config('app.network_id', 4),
             'networkName' => config('app.network_name', 'Rinkeby Testnet'),
             'rpc' => config('app.rpc', 'https://rpc.mtv.ac'),
+            'recaptcha' => config('app.recaptcha'),
         ]);
     }
 }

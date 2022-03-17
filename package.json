@@ -7,7 +7,8 @@
         "watch-poll": "mix watch -- --watch-options-poll=1000",
         "hot": "mix watch --hot",
         "prod": "npm run production",
-        "production": "mix --production"
+        "production": "mix --production",
+        "build-contracts": "sol-merger \"./contracts/*.sol\" ./build"
     },
     "devDependencies": {
         "@analytics/google-tag-manager": "^0.5.2",
@@ -29,6 +30,7 @@
         "ethereum-waffle": "^3.4.0",
         "ethers": "^5.5.4",
         "hardhat": "^2.9.0",
+        "hardhat-exposed": "^0.2.3",
         "hardhat-gas-reporter": "^1.0.8",
         "laravel-mix": "^6.0.6",
         "lodash": "^4.17.19",
@@ -37,10 +39,14 @@
         "resolve-url-loader": "^4.0.0",
         "sass": "^1.49.9",
         "sass-loader": "^12.6.0",
+        "sol-merger": "^4.0.0",
         "vue": "^3.2.31",
         "vue-loader": "^16.8.3",
         "vue-router": "^4.0.13",
         "walletlink": "^2.5.0",
         "web3": "^1.7.1"
+    },
+    "dependencies": {
+        "vue-recaptcha-v3": "^2.0.1"
     }
 }

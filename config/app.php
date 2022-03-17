@@ -198,4 +198,5 @@ return [
     'network_id' => env('NETWORK_ID', 62621),
     'network_name' => env('NETWORK_NAME', 'MultiVAC Mainnet'),
     'rpc' => env('RPC', 'https://rpc.mtv.ac'),
+    'recaptcha' => env('RECAPTCHA'),
 ];

@@ -7,6 +7,7 @@
         <meta name="network-id" content="{{ $networkId }}">
         <meta name="network-name" content="{{ $networkName }}">
         <meta name="rpc" content="{{ $rpc }}">
+        <meta name="recaptcha" content="{{ $recaptcha }}">
         <link href="{{ mix('css/app.css') }}" rel="stylesheet">
         <title>{{ config('app.name') }}</title>
     </head>
