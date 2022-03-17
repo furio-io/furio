@@ -69,7 +69,6 @@ contract FurioNFT is Ownable, ERC721 {
      * Contract constructor.
      */
     constructor(address paymentToken_) ERC721('Furio NFT', 'FNFT') {
-        createGeneration(10000, 'some description', 'ipfs://something');
         paymentToken = IERC20(paymentToken_);
     }
 
