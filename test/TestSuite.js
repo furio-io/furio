@@ -5,12 +5,99 @@ describe("FullTest", function () {
     // RUN THIS BEFORE EACH TEST
     beforeEach(async function () {
         [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
+        USDC = await ethers.getContractFactory("MockUSDC");
+        usdc = await USDC.deploy();
+        DevWallets = await ethers.getContractFactory("DevWallets");
+        devwallets = await DevWallets.deploy();
+        Whitelist = await ethers.getContractFactory("Whitelist");
+        whitelist = await Whitelist.deploy(devwallets.address, usdc.address);
         Token = await ethers.getContractFactory("Token");
         token = await Token.deploy();
         NFT = await ethers.getContractFactory("NFT");
         nft = await NFT.deploy(token.address);
     });
     // TESTS
+    describe("DevWallets Deployment", function () {
+        it("DevWallets has correct data at deployment", async function () {
+            expect(devwallets.address).to.not.equal(0);
+            expect(await devwallets.frozen()).to.equal(false);
+            expect(await devwallets.count()).to.equal(0);
+            expect(await devwallets.owner()).to.equal(owner.address);
+        });
+    });
+    describe("DevWallets Admin Functions", function () {
+        it("Owner can add addresses", async function () {
+            await expect(devwallets.addAddress(owner.address)).to.not.be.reverted;
+            expect(await devwallets.count()).to.equal(1);
+            await expect(devwallets.addAddress(addr1.address)).to.not.be.reverted;
+            expect(await devwallets.count()).to.equal(2);
+        });
+        it("Non owner cannot add addresses", async function () {
+            await expect(devwallets.connect(addr1).addAddress(addr1.address)).to.be.reverted;
+            expect(await devwallets.count()).to.equal(0);
+        });
+        it("Owner can freeze contract", async function () {
+            await expect(devwallets.addAddress(owner.address)).to.not.be.reverted;
+            expect(await devwallets.count()).to.equal(1);
+            expect(await devwallets.frozen()).to.equal(false);
+            await expect(devwallets.freeze()).to.not.be.reverted;
+            expect(await devwallets.frozen()).to.equal(true);
+            await expect(devwallets.addAddress(addr1.address)).to.be.reverted;
+        });
+        it("Non owner cannot freeze contract", async function () {
+            await expect(devwallets.connect(addr1).freeze()).to.be.reverted;
+            expect(await devwallets.frozen()).to.equal(false);
+        });
+        it("Owner cannot add the same address twice", async function () {
+            await expect(devwallets.addAddress(owner.address)).to.not.be.reverted;
+            await expect(devwallets.addAddress(owner.address)).to.be.reverted;
+            expect(await devwallets.count()).to.equal(1);
+        });
+    });
+    describe("DevWallets User Functions", function () {
+        it("Can return whether an address is on the list or not", async function () {
+            await expect(devwallets.addAddress(owner.address)).to.not.be.reverted;
+            expect(await devwallets.isDevWallet(owner.address)).to.equal(true);
+            expect(await devwallets.isDevWallet(addr1.address)).to.equal(false);
+        });
+        it("Can return the number of dev wallets", async function () {
+            await expect(devwallets.addAddress(owner.address)).to.not.be.reverted;
+            expect(await devwallets.count()).to.equal(1);
+        });
+    });
+    describe("Whitelist Deployment", function () {
+        it("Whitelist has correct data at deployment", async function () {
+            expect(whitelist.address).to.not.equal(0);
+            expect(await whitelist.devWallets()).to.equal(devwallets.address);
+            expect(await whitelist.paymentToken()).to.equal(usdc.address);
+            expect(await whitelist.totalSupply()).to.equal(0);
+            expect(await whitelist.price()).to.equal('2500000000000000000');
+            expect(await whitelist.maxSupply()).to.equal(300);
+        });
+        it("Whitelist mints to dev wallets at deployment", async function () {
+            await expect(devwallets.addAddress(owner.address)).to.not.be.reverted;
+            await expect(devwallets.addAddress(addr1.address)).to.not.be.reverted;
+            await expect(devwallets.addAddress(addr2.address)).to.not.be.reverted;
+            let newwhitelist = await Whitelist.deploy(devwallets.address, usdc.address);
+            expect(await newwhitelist.totalSupply()).to.equal(3);
+            expect(await newwhitelist.balanceOf(owner.address)).to.equal(1);
+            expect(await newwhitelist.balanceOf(addr1.address)).to.equal(1);
+            expect(await newwhitelist.balanceOf(addr2.address)).to.equal(1);
+        });
+        it("Can buy whitelist NFTs", async function () {
+            await usdc.mint(owner.address, '5000000000000000000');
+            await usdc.approve(whitelist.address, '2500000000000000000');
+            await expect(whitelist.buy()).to.not.be.reverted;
+            expect(await usdc.balanceOf(whitelist.address)).to.equal('2500000000000000000');
+        });
+        it("Cannot buy multiple NFTs", async function () {
+            await usdc.mint(owner.address, '5000000000000000000');
+            await usdc.approve(whitelist.address, '2500000000000000000');
+            await expect(whitelist.buy()).to.not.be.reverted;
+            await usdc.approve(whitelist.address, '2500000000000000000');
+            await expect(whitelist.buy()).to.be.reverted;
+        });
+    });
     describe("Token Deployment", function () {
         it("Token has correct data at deployment", async function () {
             expect(await token.DEFAULT_ADMIN_ROLE()).to.equal('0x0000000000000000000000000000000000000000000000000000000000000000');
