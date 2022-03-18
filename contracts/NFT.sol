@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
 // INTERFACES
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
@@ -14,8 +13,14 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  * @author Steve Harmeyer
  * @notice This is the NFT needed to access downline bonuses.
  */
-contract FurioNFT is Ownable, ERC721 {
+contract NFT is Ownable, ERC721 {
     using Counters for Counters.Counter;
+
+    /**
+     * Token metadata.
+     */
+    string private _name = 'Furio NFT';
+    string private _symbol = '$FURNFT';
 
     /**
      * ERC20 contract for buys and sells.
@@ -25,12 +30,12 @@ contract FurioNFT is Ownable, ERC721 {
     /**
      * Price.
      */
-    uint256 public price = 5;
+    uint256 public price = 5e16;
 
     /**
      * Sales Tax.
      */
-    uint256 public tax = 1;
+    uint256 public taxRate = 10;
 
     /**
      * Generation struct.
@@ -39,8 +44,7 @@ contract FurioNFT is Ownable, ERC721 {
      */
     struct Generation {
         uint256 maxSupply;
-        string description;
-        string imageUri;
+        string baseUri;
     }
 
     /**
@@ -68,7 +72,7 @@ contract FurioNFT is Ownable, ERC721 {
     /**
      * Contract constructor.
      */
-    constructor(address paymentToken_) ERC721('Furio NFT', 'FNFT') {
+    constructor(address paymentToken_) ERC721(_name, _symbol) {
         paymentToken = IERC20(paymentToken_);
     }
 
@@ -100,11 +104,11 @@ contract FurioNFT is Ownable, ERC721 {
      */
     function sell(uint256 tokenId_) external {
         require(msg.sender == ERC721.ownerOf(tokenId_), "Sender does not own token");
-        require(paymentToken.transfer(msg.sender, price - tax), "Payment failed");
+        uint256 tax = price * taxRate / 100;
+        paymentToken.approve(address(this), price - tax);
+        require(paymentToken.transfer(address(msg.sender), price - tax), "Payment failed");
         // burn NFT
         _burn(tokenId_);
-        // burn tax
-        paymentToken.transfer(address(0), tax);
     }
 
     /**
@@ -132,52 +136,15 @@ contract FurioNFT is Ownable, ERC721 {
     }
 
     /**
-     * Contract URI.
-     * @return string
-     * @notice Returns base64 encoded json metadata for the contract used by some marketplaces.
-     */
-    function contractURI() public pure returns (string memory) {
-        return string(
-            abi.encodePacked(
-                'data:application/json;base64,',
-                Base64.encode(
-                    bytes(
-                        abi.encodePacked(
-                            '{"name":"Furio NFT","description":"Furio NFT required for downline bonuses."}'
-                        )
-                    )
-                )
-            )
-        );
-    }
-
-    /**
      * Token URI.
      * @param tokenId_ The id of the token.
      * @notice This returns base64 encoded json for the token metadata. Allows us
      * to avoid putting metadata on IPFS.
      */
     function tokenURI(uint256 tokenId_) public view override returns (string memory) {
-        return string(
-            abi.encodePacked(
-                'data:application/json;base64,',
-                Base64.encode(
-                    bytes(
-                        abi.encodePacked(
-                            '{"name":"',
-                            name(),
-                            ' #',
-                            tokenId_,
-                            '","description":"',
-                            _generations[_tokenGenerations[tokenId_]].description,
-                            '","image":"',
-                            _generations[_tokenGenerations[tokenId_]].imageUri,
-                            '}"'
-                        )
-                    )
-                )
-            )
-        );
+        require(_exists(tokenId_), "ERC721Metadata: URI query for nonexistent token");
+        string memory baseURI = _generations[_tokenGenerations[tokenId_]].baseUri;
+        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId_)) : "";
     }
 
     /**
@@ -189,20 +156,16 @@ contract FurioNFT is Ownable, ERC721 {
     /**
      * Create a generation.
      * @param maxSupply_ The maximum NFT supply for this generation.
-     * @param description_ The description for this generation.
-     * @param imageUri_ The image URI for this generation.
+     * @param baseUri_ The metadata base URI for this generation.
      * @notice This method creates a new NFT generation.
      */
     function createGeneration(
         uint256 maxSupply_,
-        string memory description_,
-        string memory imageUri_
+        string memory baseUri_
     ) public onlyOwner
     {
         _generationTracker.increment();
-        uint256 _g = _generationTracker.current();
-        _generations[_g].maxSupply = maxSupply_;
-        _generations[_g].description = description_;
-        _generations[_g].imageUri = imageUri_;
+        _generations[_generationTracker.current()].maxSupply = maxSupply_;
+        _generations[_generationTracker.current()].baseUri = baseUri_;
     }
 }
