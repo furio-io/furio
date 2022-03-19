@@ -10,6 +10,9 @@
                 <!-- BEGIN PRIMARY NAVIGATION -->
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
+                        <router-link :to="{ name: 'Whitelist' }" class="nav-link" active-class="active">Whitelist</router-link>
+                    </li>
+                    <li class="nav-item">
                         <router-link :to="{ name: 'Furswap' }" class="nav-link" active-class="active">Furswap</router-link>
                     </li>
                     <li class="nav-item">
