@@ -5,7 +5,7 @@ pragma solidity >=0.6.0;
 import "../contracts/NFT.sol";
 
 contract $NFT is NFT {
-    constructor(address paymentToken_) NFT(paymentToken_) {}
+    constructor(address addressBook_) NFT(addressBook_) {}
 
     function $_baseURI() external view returns (string memory) {
         return super._baseURI();

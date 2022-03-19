@@ -5,80 +5,81 @@ describe("FullTest", function () {
     // RUN THIS BEFORE EACH TEST
     beforeEach(async function () {
         [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
+        AddressBook = await ethers.getContractFactory("AddressBook");
+        addressbook = await AddressBook.deploy();
         USDC = await ethers.getContractFactory("MockUSDC");
         usdc = await USDC.deploy();
-        DevWallets = await ethers.getContractFactory("DevWallets");
-        devwallets = await DevWallets.deploy();
+        await addressbook.setPaymentToken(usdc.address);
         Whitelist = await ethers.getContractFactory("Whitelist");
-        whitelist = await Whitelist.deploy(devwallets.address, usdc.address);
+        whitelist = await Whitelist.deploy(addressbook.address);
         Token = await ethers.getContractFactory("Token");
-        token = await Token.deploy();
+        token = await Token.deploy(addressbook.address);
+        await addressbook.setFurToken(token.address);
         NFT = await ethers.getContractFactory("NFT");
-        nft = await NFT.deploy(token.address);
+        nft = await NFT.deploy(addressbook.address);
     });
     // TESTS
-    describe("DevWallets Deployment", function () {
-        it("DevWallets has correct data at deployment", async function () {
-            expect(devwallets.address).to.not.equal(0);
-            expect(await devwallets.frozen()).to.equal(false);
-            expect(await devwallets.count()).to.equal(0);
-            expect(await devwallets.owner()).to.equal(owner.address);
+    describe("AddressBook Deployment", function () {
+        it("Address has correct data at deployment", async function () {
+            expect(addressbook.address).to.not.equal();
+            expect(await addressbook.paymentToken()).to.equal(usdc.address);
+            expect(await addressbook.furToken()).to.equal(token.address);
+            expect(await addressbook.furSwap()).to.equal('0x0000000000000000000000000000000000000000');
+            expect(await addressbook.furVault()).to.equal('0x0000000000000000000000000000000000000000');
+            expect(await addressbook.furPool()).to.equal('0x0000000000000000000000000000000000000000');
+            expect(await addressbook.devCount()).to.equal(0);
+            expect(await addressbook.owner()).to.equal(owner.address);
         });
     });
-    describe("DevWallets Admin Functions", function () {
-        it("Owner can add addresses", async function () {
-            await expect(devwallets.addAddress(owner.address)).to.not.be.reverted;
-            expect(await devwallets.count()).to.equal(1);
-            await expect(devwallets.addAddress(addr1.address)).to.not.be.reverted;
-            expect(await devwallets.count()).to.equal(2);
+    describe("Addressbook Admin Functions", function () {
+        it("Can add dev addresses", async function () {
+            await expect(addressbook.addDevWallet(owner.address)).to.not.be.reverted;
+            expect(await addressbook.devCount()).to.equal(1);
+            expect(await addressbook.isDevWallet(owner.address)).to.equal(true);
+            expect(await addressbook.isDevWallet(addr1.address)).to.equal(false);
+            await expect(addressbook.addDevWallet(addr1.address)).to.not.be.reverted;
+            expect(await addressbook.devCount()).to.equal(2);
+            expect(await addressbook.isDevWallet(addr1.address)).to.equal(true);
+            await expect(addressbook.connect(addr1).addDevWallet(addr2.address)).to.be.reverted;
         });
-        it("Non owner cannot add addresses", async function () {
-            await expect(devwallets.connect(addr1).addAddress(addr1.address)).to.be.reverted;
-            expect(await devwallets.count()).to.equal(0);
+        it("Can set FurSwap", async function () {
+            await expect(addressbook.setFurSwap(addr2.address)).to.not.be.reverted;
+            expect(await addressbook.furSwap()).to.equal(addr2.address);
+            await expect(addressbook.setFurSwap(addr1.address)).to.be.revertedWith("FurSwap already set");
+            await expect(addressbook.connect(addr1).setFurSwap(addr2.address)).to.be.reverted;
         });
-        it("Owner can freeze contract", async function () {
-            await expect(devwallets.addAddress(owner.address)).to.not.be.reverted;
-            expect(await devwallets.count()).to.equal(1);
-            expect(await devwallets.frozen()).to.equal(false);
-            await expect(devwallets.freeze()).to.not.be.reverted;
-            expect(await devwallets.frozen()).to.equal(true);
-            await expect(devwallets.addAddress(addr1.address)).to.be.reverted;
+        it("Can set FurVault", async function () {
+            await expect(addressbook.setFurVault(addr2.address)).to.not.be.reverted;
+            expect(await addressbook.furVault()).to.equal(addr2.address);
+            await expect(addressbook.setFurVault(addr1.address)).to.be.revertedWith("FurVault already set");
+            await expect(addressbook.connect(addr1).setFurVault(addr2.address)).to.be.reverted;
         });
-        it("Non owner cannot freeze contract", async function () {
-            await expect(devwallets.connect(addr1).freeze()).to.be.reverted;
-            expect(await devwallets.frozen()).to.equal(false);
+        it("Can set FurPool", async function () {
+            await expect(addressbook.setFurPool(addr2.address)).to.not.be.reverted;
+            expect(await addressbook.furPool()).to.equal(addr2.address);
+            await expect(addressbook.setFurPool(addr1.address)).to.be.revertedWith("FurPool already set");
+            await expect(addressbook.connect(addr1).setFurPool(addr2.address)).to.be.reverted;
         });
-        it("Owner cannot add the same address twice", async function () {
-            await expect(devwallets.addAddress(owner.address)).to.not.be.reverted;
-            await expect(devwallets.addAddress(owner.address)).to.be.reverted;
-            expect(await devwallets.count()).to.equal(1);
-        });
-    });
-    describe("DevWallets User Functions", function () {
-        it("Can return whether an address is on the list or not", async function () {
-            await expect(devwallets.addAddress(owner.address)).to.not.be.reverted;
-            expect(await devwallets.isDevWallet(owner.address)).to.equal(true);
-            expect(await devwallets.isDevWallet(addr1.address)).to.equal(false);
-        });
-        it("Can return the number of dev wallets", async function () {
-            await expect(devwallets.addAddress(owner.address)).to.not.be.reverted;
-            expect(await devwallets.count()).to.equal(1);
+        it("Can revoke ownership", async function () {
+            await expect(addressbook.renounceOwnership()).to.not.be.reverted;
+            expect(await addressbook.owner()).to.equal('0x0000000000000000000000000000000000000000');
+            await expect(addressbook.addDevWallet(owner.address)).to.be.reverted;
         });
     });
     describe("Whitelist Deployment", function () {
         it("Whitelist has correct data at deployment", async function () {
             expect(whitelist.address).to.not.equal(0);
-            expect(await whitelist.devWallets()).to.equal(devwallets.address);
+            expect(await whitelist.addressBook()).to.equal(addressbook.address);
             expect(await whitelist.paymentToken()).to.equal(usdc.address);
             expect(await whitelist.totalSupply()).to.equal(0);
             expect(await whitelist.price()).to.equal('2500000000000000000');
             expect(await whitelist.maxSupply()).to.equal(300);
         });
         it("Whitelist mints to dev wallets at deployment", async function () {
-            await expect(devwallets.addAddress(owner.address)).to.not.be.reverted;
-            await expect(devwallets.addAddress(addr1.address)).to.not.be.reverted;
-            await expect(devwallets.addAddress(addr2.address)).to.not.be.reverted;
-            let newwhitelist = await Whitelist.deploy(devwallets.address, usdc.address);
+            await expect(addressbook.addDevWallet(owner.address)).to.not.be.reverted;
+            await expect(addressbook.addDevWallet(addr1.address)).to.not.be.reverted;
+            await expect(addressbook.addDevWallet(addr2.address)).to.not.be.reverted;
+            let newwhitelist = await Whitelist.deploy(addressbook.address);
             expect(await newwhitelist.totalSupply()).to.equal(3);
             expect(await newwhitelist.balanceOf(owner.address)).to.equal(1);
             expect(await newwhitelist.balanceOf(addr1.address)).to.equal(1);

@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 // INTERFACES
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./IDevWallets.sol";
+import "./IAddressBook.sol";
 
 /**
  * @title Furio Whitelist NFT
@@ -25,11 +25,9 @@ contract Whitelist is ERC721 {
     string private _symbol = '$FURWL';
 
     /**
-     * Dev wallets contract.
-     * @notice All developer wallets are stored in a publicly accessible contract
-     * in order to provide transparency.
+     * Address book contract.
      */
-    IDevWallets public devWallets;
+    IAddressBook public addressBook;
 
     /**
      * ERC20 contract for buys and sells.
@@ -75,10 +73,10 @@ contract Whitelist is ERC721 {
      * @dev Set the addresses for devWallets and paymentToken, then mint
      * ONE NFT per dev wallet.
      */
-    constructor(address devWallets_, address paymentToken_) ERC721(_name, _symbol) {
-        devWallets = IDevWallets(devWallets_);
-        paymentToken = IERC20(paymentToken_);
-        address[] memory _devWallets = devWallets.addresses();
+    constructor(address addressBook_) ERC721(_name, _symbol) {
+        addressBook = IAddressBook(addressBook_);
+        paymentToken = IERC20(addressBook.paymentToken());
+        address[] memory _devWallets = addressBook.devWallets();
         for(uint i = 0; i < _devWallets.length; i ++) {
             mint(_devWallets[i]);
         }

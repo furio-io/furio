@@ -25,9 +25,10 @@ import { createApp } from "vue";
 import { VueReCaptcha } from "vue-recaptcha-v3";
 import App from "./App.vue";
 import router from "./router";
+import store from "./store";
 createApp(App, {
     networkId: networkId.content,
     networkName: networkName.content,
     rpc: rpc.content,
     recaptcha: recaptcha.content,
-}).use(router).use(VueReCaptcha).mount('#app');
+}).use(router).use(store).use(VueReCaptcha).mount('#app');

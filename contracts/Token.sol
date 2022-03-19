@@ -3,6 +3,8 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+// INTERFACES
+import "./IAddressBook.sol";
 
 contract Token is AccessControl, ERC20 {
     /**
@@ -10,6 +12,11 @@ contract Token is AccessControl, ERC20 {
      */
     string private _name = 'Furio Token';
     string private _symbol = '$FUR';
+
+    /**
+     * Address book contract.
+     */
+    IAddressBook public addressBook;
 
     /**
      * Roles.
@@ -45,7 +52,8 @@ contract Token is AccessControl, ERC20 {
     /**
      * Contract constructor.
      */
-    constructor() ERC20(_name, _symbol) {
+    constructor(address addressBook_) ERC20(_name, _symbol) {
+        addressBook = IAddressBook(addressBook_);
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(MINTER_ROLE, msg.sender);
     }

@@ -5,7 +5,7 @@ pragma solidity >=0.6.0;
 import "../contracts/Whitelist.sol";
 
 contract $Whitelist is Whitelist {
-    constructor(address devWallets_, address paymentToken_) Whitelist(devWallets_, paymentToken_) {}
+    constructor(address addressBook_) Whitelist(addressBook_) {}
 
     function $mint(address to_) external {
         return super.mint(to_);
