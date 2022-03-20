@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 // INTERFACES
-import "./IAddressBook.sol";
+import "./IFurAddressBook.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
@@ -26,7 +26,7 @@ contract NFT is Ownable, ERC721 {
     /**
      * AddressBook contract.
      */
-    IAddressBook public addressBook;
+    IFurAddressBook public addressBook;
 
     /**
      * ERC20 contract for buys and sells.
@@ -79,7 +79,7 @@ contract NFT is Ownable, ERC721 {
      * Contract constructor.
      */
     constructor(address addressBook_) ERC721(_name, _symbol) {
-        addressBook = IAddressBook(addressBook_);
+        addressBook = IFurAddressBook(addressBook_);
         paymentToken = IERC20(addressBook.furToken());
     }
 

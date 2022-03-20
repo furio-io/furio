@@ -7,7 +7,7 @@ pragma solidity ^0.8.0;
  * @notice This contract stores the list of important addresses in
  * the Furio ecosystem.
  */
-interface IAddressBook {
+interface IFurAddressBook {
 
     /**
      * Payment token.
@@ -38,6 +38,12 @@ interface IAddressBook {
      * @notice FurPool address.
      */
     function furPool() external view returns (address);
+
+    /**
+     * Whitelist.
+     * @notice Whitelist NFT address.
+     */
+    function whitelist() external view returns (address);
 
     /**
      * Add dev wallet.
@@ -92,4 +98,10 @@ interface IAddressBook {
      * @notice Sets the address for FurPool.
      */
     function setFurPool(address address_) external;
+
+    /**
+     * Set Whitelist.
+     * @notice Sets the address for Whitelist.
+     */
+    function setWhitelist(address address_) external;
 }

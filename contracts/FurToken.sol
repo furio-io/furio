@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 // INTERFACES
-import "./IAddressBook.sol";
+import "./IFurAddressBook.sol";
 
-contract Token is AccessControl, ERC20 {
+contract FurToken is Ownable, ERC20 {
     /**
      * Token metadata.
      */
@@ -16,12 +16,7 @@ contract Token is AccessControl, ERC20 {
     /**
      * Address book contract.
      */
-    IAddressBook public addressBook;
-
-    /**
-     * Roles.
-     */
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    IFurAddressBook public addressBook;
 
     /**
      * Stats.
@@ -53,9 +48,7 @@ contract Token is AccessControl, ERC20 {
      * Contract constructor.
      */
     constructor(address addressBook_) ERC20(_name, _symbol) {
-        addressBook = IAddressBook(addressBook_);
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(MINTER_ROLE, msg.sender);
+        addressBook = IFurAddressBook(addressBook_);
     }
 
     /**
@@ -99,7 +92,7 @@ contract Token is AccessControl, ERC20 {
      * -------------------------------------------------------------------------
      */
     function mint(address to_, uint256 amount_) external {
-        require(hasRole(MINTER_ROLE, _msgSender()), "Must have minter role to mint");
+        require(msg.sender == owner() || msg.sender == addressBook.furVault() || msg.sender == addressBook.whitelist(), "Unauthorized");
         require(!mintingFinished, "Minting is finished");
         require(amount_ > 0 && mintedSupply + amount_ <= targetSupply, "Incorrect amount");
         super._mint(to_, amount_);

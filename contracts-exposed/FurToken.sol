@@ -2,10 +2,10 @@
 
 pragma solidity >=0.6.0;
 
-import "../contracts/Token.sol";
+import "../contracts/FurToken.sol";
 
-contract $Token is Token {
-    constructor(address addressBook_) Token(addressBook_) {}
+contract $FurToken is FurToken {
+    constructor(address addressBook_) FurToken(addressBook_) {}
 
     function $updateStats(address player_) external {
         return super.updateStats(player_);

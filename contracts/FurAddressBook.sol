@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * @notice This contract stores the list of important addresses in
  * the Furio ecosystem.
  */
-contract AddressBook is Ownable {
+contract FurAddressBook is Ownable {
     /**
      * Dev wallets.
      * @dev Internal storage for dev wallets.
@@ -45,6 +45,12 @@ contract AddressBook is Ownable {
      * @notice FurPool address.
      */
     address public furPool;
+
+    /**
+     * Whitelist NFT.
+     * @notice Whitelist NFT address.
+     */
+    address public whitelist;
 
     /**
      * Add dev wallet.
@@ -128,5 +134,14 @@ contract AddressBook is Ownable {
     function setFurPool(address address_) external onlyOwner {
         require(furPool == address(0), "FurPool already set");
         furPool = address_;
+    }
+
+    /**
+     * Set Whitelist.
+     * @notice Sets the address for Whitelist.
+     */
+    function setWhitelist(address address_) external onlyOwner {
+        require(whitelist == address(0), "Whitelist already set");
+        whitelist = address_;
     }
 }
