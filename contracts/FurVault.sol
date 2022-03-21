@@ -155,31 +155,36 @@ contract FurVault is Ownable {
     }
 
     /**
+     * Set upline.
+     */
+    function setUpine(address upline_) external {
+        _setUpline(msg.sender, upline_);
+    }
+    function _setUpline(address user_, address upline_) internal {
+        require(users[user_].upline == address(0) && upline_ != user_ && user_ != owner() && (users[upline_].depositTime > 0 || addressBook.isDevWallet(upline_)), "Invalid upline");
+        users[user_].upline = upline_;
+        emit Upline(user_, upline_);
+        totalUsers ++;
+        for(uint256 i = 0; i < referralDepth; i ++) {
+            if(upline_ == address(0)) break;
+            users[upline_].totalStructure ++;
+            upline_ = users[upline_].upline;
+        }
+    }
+
+    /**
      * Deposit.
      */
     function deposit(uint256 amount_) public _checkin {
         require((users[msg.sender].deposits > 0 && amount_ >= minimumDeposit) || amount_ >= minimumInitialDeposit, "Minimum deposit amount not met");
         require(users[msg.sender].upline != address(0) || msg.sender == owner(), "No upline");
-        _deposit(msg.sender, amount_);
-    }
-
-    /**
-     * Deposit with upline.
-     */
-    function deposit(address upline_, uint256 amount_) external _checkin {
-        require((users[msg.sender].deposits > 0 && amount_ >= minimumDeposit) || amount_ >= minimumInitialDeposit, "Minimum deposit amount not met");
-        if(users[msg.sender].upline == address(0) && upline_ != msg.sender && msg.sender != owner() && (users[upline_].depositTime > 0 || upline_ == owner())) {
-            users[msg.sender].upline = upline_;
-            users[upline_].referrals ++;
-            emit Upline(msg.sender, upline_);
-            totalUsers ++;
-            for(uint256 i = 0; i < referralDepth; i ++) {
-                if(upline_ == address(0)) break;
-                users[upline_].totalStructure ++;
-                upline_ = users[upline_].upline;
-            }
+        uint256 _tax_ = amount_ * transferTax / 100;
+        uint256 _depositAmount_ = amount_ - _tax_;
+        if(_claimsAvailable(msg.sender) > amount_ / 100) {
+            uint256 _claimedDividends_ = _claim(msg.sender, false);
+            uint256 _taxedDividends_ = _claimedDividends_ * (100 - compoundTax) / 100;
+            _depositAmount_ += _taxedDividends_;
         }
-        require(users[msg.sender].upline != address(0) || msg.sender == owner(), "No upline");
         _deposit(msg.sender, amount_);
     }
 
@@ -188,13 +193,6 @@ contract FurVault is Ownable {
      */
     function _deposit(address user_, uint256 amount_) internal {
         require(furToken.transferFrom(user_, address(this), amount_), "Transfer failed");
-        uint256 _tax_ = amount_ * transferTax / 100;
-        uint256 _depositAmount_ = amount_ - _tax_;
-        if(_claimsAvailable(user_) > amount_ / 100) {
-            uint256 _claimedDividends_ = _claim(user_, false);
-            uint256 _taxedDividends_ = _claimedDividends_ * (100 - compoundTax) / 100;
-            _depositAmount_ += _taxedDividends_;
-        }
         users[user_].deposits += amount_;
         users[user_].depositTime = block.timestamp;
         totalDeposited += amount_;
@@ -217,10 +215,18 @@ contract FurVault is Ownable {
     function claim() external _checkin {
         _claimOut(msg.sender);
     }
-
-    /**
-     * Internal claim.
-     */
+    function _claimOut(address user_) internal {
+        uint256 _payout_ = _claim(user_, true);
+        uint256 _vaultBalance_ = furToken.balanceOf(address(this));
+        if(_vaultBalance_ < _payout_) {
+            uint256 _mintAmount_ = _payout_ - _vaultBalance_;
+            furToken.mint(address(this), _mintAmount_);
+        }
+        uint256 _grossPayout_ = _payout_ * (100 - exitTax) / 100;
+        require(furToken.transfer(user_, _grossPayout_), "Transfer failed");
+        emit Leaderboard(user_, users[user_].referrals, users[user_].deposits, users[user_].payouts, users[user_].totalStructure);
+        totalTransactions ++;
+    }
     function _claim(address user_, bool isClaimedOut_) internal returns (uint256) {
         uint256 _maxPayout_ = _maxPayout(user_);
         require(users[user_].payouts < _maxPayout_, "Payouts are maxed out");
@@ -241,18 +247,29 @@ contract FurVault is Ownable {
         return _claimsAvailable_;
     }
 
-    //@dev Claim, transfer, and top-off
-    function _claimOut(address user_) internal {
-        uint256 _payout_ = _claim(user_, true);
-        uint256 _vaultBalance_ = furToken.balanceOf(address(this));
-        if(_vaultBalance_ < _payout_) {
-            uint256 _mintAmount_ = _payout_ - _vaultBalance_;
-            furToken.mint(address(this), _mintAmount_);
-        }
-        uint256 _grossPayout_ = _payout_ * (100 - exitTax) / 100;
-        require(furToken.transfer(user_, _grossPayout_), "Transfer failed");
+    /**
+     * Roll.
+     */
+    function roll() external _checkin {
+        _roll(msg.sender);
+    }
+    function _roll(address user_) internal {
+        uint256 _payout_ = _claim(user_, false);
+        uint256 _payoutTaxed_ = _payout_ * (100 - compoundTax) / 100;
+        _deposit(user_, _payoutTaxed_);
+        users[user_].rolls += _payoutTaxed_;
         emit Leaderboard(user_, users[user_].referrals, users[user_].deposits, users[user_].payouts, users[user_].totalStructure);
         totalTransactions ++;
+    }
+
+    /**
+     * Airdrop.
+     */
+    function airdrop(address to_, uint256 amount_) external {
+        _airdrop(msg.sender, to_, amount_);
+    }
+    function _airdrop(address user_, address to_, uint256 amount_) internal {
+
     }
 
     /**
