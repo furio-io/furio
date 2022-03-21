@@ -23,22 +23,10 @@ contract FurAddressBook is Ownable {
     address public paymentToken;
 
     /**
-     * Fur token.
-     * @notice $FUR token address.
+     * Fur NFT.
+     * @notice FurNFT address.
      */
-    address public furToken;
-
-    /**
-     * FurSwap.
-     * @notice FurSwap address.
-     */
-    address public furSwap;
-
-    /**
-     * FurVault.
-     * @notice FurVault address.
-     */
-    address public furVault;
+    address public furNFT;
 
     /**
      * FurPool.
@@ -47,10 +35,28 @@ contract FurAddressBook is Ownable {
     address public furPool;
 
     /**
-     * Whitelist NFT.
+     * FurSwap.
+     * @notice FurSwap address.
+     */
+    address public furSwap;
+
+    /**
+     * Fur token.
+     * @notice $FUR token address.
+     */
+    address public furToken;
+
+    /**
+     * FurVault.
+     * @notice FurVault address.
+     */
+    address public furVault;
+
+    /**
+     * FurWhitelist NFT.
      * @notice Whitelist NFT address.
      */
-    address public whitelist;
+    address public furWhitelist;
 
     /**
      * Add dev wallet.
@@ -101,30 +107,12 @@ contract FurAddressBook is Ownable {
     }
 
     /**
-     * Set Fur token.
+     * Set Fur NFT.
      * @notice Sets the address for $FUR token.
      */
-    function setFurToken(address address_) external onlyOwner {
-        require(furToken == address(0), "Fur token already set");
-        furToken = address_;
-    }
-
-    /**
-     * Set FurSwap.
-     * @notice Sets the address for FurSwap.
-     */
-    function setFurSwap(address address_) external onlyOwner {
-        require(furSwap == address(0), "FurSwap already set");
-        furSwap = address_;
-    }
-
-    /**
-     * Set FurVault.
-     * @notice Sets the address for FurVault.
-     */
-    function setFurVault(address address_) external onlyOwner {
-        require(furVault == address(0), "FurVault already set");
-        furVault = address_;
+    function setFurNFT(address address_) external onlyOwner {
+        require(furNFT == address(0), "FurNFT already set");
+        furNFT = address_;
     }
 
     /**
@@ -137,11 +125,38 @@ contract FurAddressBook is Ownable {
     }
 
     /**
-     * Set Whitelist.
+     * Set FurSwap.
+     * @notice Sets the address for FurSwap.
+     */
+    function setFurSwap(address address_) external onlyOwner {
+        require(furSwap == address(0), "FurSwap already set");
+        furSwap = address_;
+    }
+
+    /**
+     * Set Fur token.
+     * @notice Sets the address for $FUR token.
+     */
+    function setFurToken(address address_) external onlyOwner {
+        require(furToken == address(0), "Fur token already set");
+        furToken = address_;
+    }
+
+    /**
+     * Set FurVault.
+     * @notice Sets the address for FurVault.
+     */
+    function setFurVault(address address_) external onlyOwner {
+        require(furVault == address(0), "FurVault already set");
+        furVault = address_;
+    }
+
+    /**
+     * Set FurWhitelist.
      * @notice Sets the address for Whitelist.
      */
-    function setWhitelist(address address_) external onlyOwner {
-        require(whitelist == address(0), "Whitelist already set");
-        whitelist = address_;
+    function setFurWhitelist(address address_) external onlyOwner {
+        require(furWhitelist == address(0), "FurWhitelist already set");
+        furWhitelist = address_;
     }
 }

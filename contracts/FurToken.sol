@@ -92,7 +92,7 @@ contract FurToken is Ownable, ERC20 {
      * -------------------------------------------------------------------------
      */
     function mint(address to_, uint256 amount_) external {
-        require(msg.sender == owner() || msg.sender == addressBook.furVault() || msg.sender == addressBook.whitelist(), "Unauthorized");
+        require(msg.sender == owner() || msg.sender == addressBook.furVault() || msg.sender == addressBook.furWhitelist(), "Unauthorized");
         require(!mintingFinished, "Minting is finished");
         require(amount_ > 0 && mintedSupply + amount_ <= targetSupply, "Incorrect amount");
         super._mint(to_, amount_);

@@ -14,7 +14,7 @@ import "./IFurAddressBook.sol";
  * @notice This is the NFT needed to be on the whitelist. Purchasing this NFT
  * will get the user 500 $FUR tokens and 2 FurioNFTs for downline benefits.
  */
-contract Whitelist is ERC721 {
+contract FurWhitelist is ERC721 {
     using Counters for Counters.Counter;
 
     /**

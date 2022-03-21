@@ -14,7 +14,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  * @author Steve Harmeyer
  * @notice This is the NFT needed to access downline bonuses.
  */
-contract NFT is Ownable, ERC721 {
+contract FurNFT is Ownable, ERC721 {
     using Counters for Counters.Counter;
 
     /**

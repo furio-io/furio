@@ -96,5 +96,6 @@ contract Swap is AccessControl, ERC20 {
     function swapInput(uint256 sold_, uint256 minTokens_, address buyer_, address recipient_) internal {
         require(sold_ > 0, "Sold must be greater than zero");
         require(minTokens_ > 0, "Minimum tokens must be greater than zero");
+        uint256 tokenReserve = swapToken.balanceOf(address(this));
     }
 }

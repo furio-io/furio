@@ -16,22 +16,10 @@ interface IFurAddressBook {
     function paymentToken() external view returns (address);
 
     /**
-     * Fur token.
-     * @notice $FUR token address.
+     * Fur NFT.
+     * @notice FurNFT address.
      */
-    function furToken() external view returns (address);
-
-    /**
-     * FurSwap.
-     * @notice FurSwap address.
-     */
-    function furSwap() external view returns (address);
-
-    /**
-     * FurVault.
-     * @notice FurVault address.
-     */
-    function furVault() external view returns (address);
+    function furNFT() external view returns (address);
 
     /**
      * FurPool.
@@ -40,10 +28,28 @@ interface IFurAddressBook {
     function furPool() external view returns (address);
 
     /**
+     * FurSwap.
+     * @notice FurSwap address.
+     */
+    function furSwap() external view returns (address);
+
+    /**
+     * Fur token.
+     * @notice $FUR token address.
+     */
+    function furToken() external view returns (address);
+
+    /**
+     * FurVault.
+     * @notice FurVault address.
+     */
+    function furVault() external view returns (address);
+
+    /**
      * Whitelist.
      * @notice Whitelist NFT address.
      */
-    function whitelist() external view returns (address);
+    function furWhitelist() external view returns (address);
 
     /**
      * Add dev wallet.
@@ -76,22 +82,10 @@ interface IFurAddressBook {
     function setPaymentToken(address address_) external;
 
     /**
-     * Set Fur token.
+     * Set Fur NFT.
      * @notice Sets the address for $FUR token.
      */
-    function setFurToken(address address_) external;
-
-    /**
-     * Set FurSwap.
-     * @notice Sets the address for FurSwap.
-     */
-    function setFurSwap(address address_) external;
-
-    /**
-     * Set FurVault.
-     * @notice Sets the address for FurVault.
-     */
-    function setFurVault(address address_) external;
+    function setFurNFT(address address_) external;
 
     /**
      * Set FurPool.
@@ -100,8 +94,26 @@ interface IFurAddressBook {
     function setFurPool(address address_) external;
 
     /**
+     * Set FurSwap.
+     * @notice Sets the address for FurSwap.
+     */
+    function setFurSwap(address address_) external;
+
+    /**
+     * Set Fur token.
+     * @notice Sets the address for $FUR token.
+     */
+    function setFurToken(address address_) external;
+
+    /**
+     * Set FurVault.
+     * @notice Sets the address for FurVault.
+     */
+    function setFurVault(address address_) external;
+
+    /**
      * Set Whitelist.
      * @notice Sets the address for Whitelist.
      */
-    function setWhitelist(address address_) external;
+    function setFurWhitelist(address address_) external;
 }
