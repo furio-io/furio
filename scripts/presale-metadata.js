@@ -5,7 +5,8 @@ async function main() {
         const metadata = {
             name: "FUR Presale NFT #" + i,
             description: "This NFT is redeemable for 500 $FUR tokens and 2 $FURNFT tokens",
-            image: "ipfs://QmPNvrwCRTGaqLLX4mapo4dyE6FJQCnStQzZy3rFweqM7B"
+            image: "ipfs://QmP5wfp6UcaGYdAqXYf35qTRGsvY7Z7KH9HXqmAC6pq9DR/furio-presale.png",
+            external_url: "https://furio.io"
         }
         const jsonString = JSON.stringify(metadata);
         fs.writeFileSync("./public/metadata/presale/" + i, jsonString);

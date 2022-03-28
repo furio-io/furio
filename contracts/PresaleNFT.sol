@@ -59,6 +59,12 @@ contract PresaleNFT is Ownable, Pausable, ERC721 {
     Counters.Counter private _tokenIdTracker;
 
     /**
+     * Freeze URI event.
+     * @dev Tells opensea that the metadata is frozen.
+     */
+    event PermanentURI(string value_, uint256 indexed id_);
+
+    /**
      * Contract constructor.
      * @dev Set the addresses for devWallets and paymentToken, then mint
      * ONE NFT per dev wallet.
@@ -96,8 +102,10 @@ contract PresaleNFT is Ownable, Pausable, ERC721 {
         require(!purchased[msg.sender], "Address already purchased");
         require(totalSupply() < maxSupply, "Sold out");
         _tokenIdTracker.increment();
-        super._mint(msg.sender, _tokenIdTracker.current());
+        uint256 _id_ = _tokenIdTracker.current();
+        super._mint(msg.sender, _id_);
         purchased[msg.sender] = true;
+        emit PermanentURI(tokenURI(_id_), _id_);
     }
 
     /**
@@ -110,8 +118,10 @@ contract PresaleNFT is Ownable, Pausable, ERC721 {
         require(!purchased[to_], "Address already purchased");
         require(totalSupply() < maxSupply, "Sold out");
         _tokenIdTracker.increment();
-        super._mint(to_, _tokenIdTracker.current());
+        uint256 _id_ = _tokenIdTracker.current();
+        super._mint(to_, _id_);
         purchased[to_] = true;
+        emit PermanentURI(tokenURI(_id_), _id_);
     }
 
 
@@ -152,6 +162,6 @@ contract PresaleNFT is Ownable, Pausable, ERC721 {
      */
     function tokenURI(uint256 tokenId_) public view override returns (string memory) {
         require(tokenId_ > 0 && tokenId_ <= _tokenIdTracker.current(), "Token does not exist");
-        return string(abi.encodePacked("ipfs://QmNwAprtGuRLvxnDvdjqtqkv5gj5MHFenYTMmdd31tZ2Jp/", Strings.toString(tokenId_)));
+        return string(abi.encodePacked("ipfs://QmdVos2MHKUWLuRHthJ4ADS6JNgWJNNgHMBqAm8Nt21JPE/", Strings.toString(tokenId_)));
     }
 }

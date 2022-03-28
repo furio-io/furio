@@ -5,7 +5,15 @@ async function main() {
         const metadata = {
             name: "FUR NFT #" + i,
             description: "This NFT is used for Furio downline rewards and future voting rights.",
-            image: "ipfs://QmdDQ3F8jhFRkwbjVMfH583Tiaaf53hkL1atviav9wd3nY"
+            image: "ipfs://QmfYgMLHc6UvL2vGeEwyEVZdyVtz33SkP4WYwVPCs7v83t/furio-nft-g1.gif",
+            external_url: "https://furio.io",
+            attributes: [
+                {
+                    display_type: "number",
+                    trait_type: "generation",
+                    value: 1
+                }
+            ]
         }
         const jsonString = JSON.stringify(metadata);
         fs.writeFileSync("./public/metadata/downline-g1/" + i, jsonString);
