@@ -66,8 +66,8 @@ describe("Presale NFT", function () {
         await expect(admin.connect(addr1).unpausePresaleNFT()).to.be.revertedWith("Unauthorized");
         expect(await presalenft.paused()).to.equal(true);
     });
-    it("Unpausing NFT results in team wallet mint", async function () {
-        await expect(admin.unpausePresaleNFT()).to.not.be.reverted;
+    it("Can team wallet mint", async function () {
+        await expect(admin.teamPresaleMint()).to.not.be.reverted;
         expect(await presalenft.totalSupply()).to.equal(2);
     });
     it("Can buy NFT", async function () {
@@ -75,7 +75,7 @@ describe("Presale NFT", function () {
         await expect(admin.unpausePresaleNFT()).to.not.be.reverted;
         await expect(mockusdc.connect(addr2).approve(presalenft.address, "2500000000000000000")).to.not.be.reverted;
         await expect(presalenft.connect(addr2).buy()).to.not.be.reverted;
-        expect(await presalenft.totalSupply()).to.equal(3);
+        expect(await presalenft.totalSupply()).to.equal(1);
     });
     it("Cannot buy NFT when paused", async function () {
         await expect(mockusdc.transfer(addr2.address, "5000000000000000000")).to.not.be.reverted;
@@ -88,19 +88,28 @@ describe("Presale NFT", function () {
         await expect(admin.unpausePresaleNFT()).to.not.be.reverted;
         await expect(mockusdc.connect(addr2).approve(presalenft.address, "2500000000000000000")).to.not.be.reverted;
         await expect(presalenft.connect(addr2).buy()).to.not.be.reverted;
-        expect(await presalenft.totalSupply()).to.equal(3);
+        expect(await presalenft.totalSupply()).to.equal(1);
         await expect(mockusdc.connect(addr2).approve(presalenft.address, "2500000000000000000")).to.not.be.reverted;
         await expect(presalenft.connect(addr2).buy()).to.be.revertedWith("Address already purchased");
-        expect(await presalenft.totalSupply()).to.equal(3);
+        expect(await presalenft.totalSupply()).to.equal(1);
     });
     it("Team address cannot buy an NFT if they already own one", async function () {
         await expect(admin.unpausePresaleNFT()).to.not.be.reverted;
+        await expect(admin.teamPresaleMint()).to.not.be.reverted;
         await expect(mockusdc.approve(presalenft.address, "2500000000000000000")).to.not.be.reverted;
         await expect(presalenft.buy()).to.be.revertedWith("Address already purchased");
         expect(await presalenft.totalSupply()).to.equal(2);
     });
+    it("Family address can mint while NFT is paused", async function () {
+        await expect(admin.addFamilyWallet(addr2.address)).to.not.be.reverted;
+        await expect(mockusdc.transfer(addr2.address, "2500000000000000000")).to.not.be.reverted;
+        await expect(mockusdc.connect(addr2).approve(admin.address, "2500000000000000000")).to.be.not.be.reverted;
+        await expect(admin.connect(addr2).familyPresaleMint()).to.not.be.reverted;
+        expect(await presalenft.balanceOf(addr2.address)).to.equal(1);
+    });
     it("Owner info has correct values", async function () {
         await expect(admin.unpausePresaleNFT()).to.not.be.reverted;
+        await expect(admin.teamPresaleMint()).to.not.be.reverted;
         expect(await presalenft.balanceOf(owner.address)).to.equal(1);
         expect(await presalenft.balanceOf(addr1.address)).to.equal(1);
         expect(await presalenft.tokenOfOwnerByIndex(owner.address, 0)).to.equal(1);

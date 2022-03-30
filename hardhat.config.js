@@ -39,6 +39,10 @@ module.exports = {
       url: process.env.RINKEBY_RPC_URL || '',
       accounts: accounts,
     },
+    ropsten: {
+      url: process.env.ROPSTEN_RPC_URL || '',
+      accounts: accounts,
+    },
     mainnet: {
       url: process.env.MAINNET_RPC_URL || '',
       accounts: accounts,
@@ -52,6 +56,7 @@ module.exports = {
     apiKey: {
         mainnet: process.env.ETHERSCAN_API_KEY,
         rinkeby: process.env.ETHERSCAN_API_KEY,
+        ropsten: process.env.ETHERSCAN_API_KEY,
         polygon: process.env.POLYGONSCAN_API_KEY,
     },
   },

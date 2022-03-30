@@ -27,6 +27,12 @@ contract Admin is AccessControlEnumerable
     address[] private _teamWallets;
 
     /**
+     * Family wallets.
+     * @dev Internal storage for all family member wallets.
+     */
+    address[] private _familyWallets;
+
+    /**
      * Payment token.
      * @dev The ERC20 token used to buy and sell FUR.
      */
@@ -67,6 +73,12 @@ contract Admin is AccessControlEnumerable
      * @dev References the Vault contract.
      */
     IVault private _vault;
+
+    /**
+     * Presale NFTs claimed.
+     * @dev Keeps track of which presale NFTs have been claimed.
+     */
+    mapping(uint256 => bool) private _presaleNFTsClaimed;
 
     /**
      * Constructor.
@@ -112,6 +124,41 @@ contract Admin is AccessControlEnumerable
         for(uint i = 0; i < _teamWallets.length; i ++)
         {
             if(_teamWallets[i] == address_) {
+                exists = true;
+            }
+        }
+        return exists;
+    }
+
+    /**
+     * Get all family wallets.
+     * @notice Returns all family wallets.
+     */
+    function familyWallets() external view returns (address[] memory)
+    {
+        return _teamWallets;
+    }
+
+    /**
+     * Get family wallet count.
+     * @notice Returns the number of family wallets.
+     */
+    function familyWalletCount() external view returns (uint256)
+    {
+        return _teamWallets.length;
+    }
+
+    /**
+     * Check if an address is a family wallet.
+     * @param address_ The address to check.
+     * @notice Returns true of the address is a family wallet.
+     */
+    function isFamilyWallet(address address_) public view returns (bool)
+    {
+        bool exists = false;
+        for(uint i = 0; i < _familyWallets.length; i ++)
+        {
+            if(_familyWallets[i] == address_) {
                 exists = true;
             }
         }
@@ -196,6 +243,17 @@ contract Admin is AccessControlEnumerable
     {
         require(!isTeamWallet(address_), "Address already exists");
         _teamWallets.push(address_);
+    }
+
+    /**
+     * Add family wallet.
+     * @param address_ The address to add.
+     * @notice Adds a family wallet to the _familyWallets array.
+     */
+    function addFamilyWallet(address address_) external admin
+    {
+        require(!isFamilyWallet(address_), "Address already exists");
+        _familyWallets.push(address_);
     }
 
     /**
@@ -288,11 +346,43 @@ contract Admin is AccessControlEnumerable
     function unpausePresaleNFT() external admin
     {
         _presaleNFT.unpause();
-        for (uint i = 0; i < _teamWallets.length; i++) {
-            if(_presaleNFT.balanceOf(_teamWallets[i]) == 0) {
-                _presaleNFT.mint(_teamWallets[i]);
-            }
+    }
+
+    /**
+     * Team mint presale NFT.
+     * @notice this allows team wallets to mint an NFT.
+     */
+    function teamPresaleMint() external admin
+    {
+        for (uint i = 0; i < _teamWallets.length; i ++) {
+            _presaleNFT.mint(_teamWallets[i]);
         }
+    }
+
+    /**
+     * Family mint presale NFT.
+     * @notice This allows family wallets to mint an NFT.
+     */
+    function familyPresaleMint() external
+    {
+        require(isFamilyWallet(msg.sender), "Unauthorized");
+        require(_paymentToken.transferFrom(msg.sender, address(_presaleNFT), 250e16), "Payment failed");
+        _presaleNFT.mint(msg.sender);
+    }
+
+    /**
+     * Exchange presale NFT.
+     * @notice This exchanges a presale NFT for 500 $FUR and 2 $FURNFT
+     */
+    function exchangePresaleNft() external
+    {
+        uint256 _tokenId_ = _presaleNFT.tokenOfOwnerByIndex(msg.sender, 0);
+        require(_tokenId_ > 0, "No NFTs found");
+        require(!_presaleNFTsClaimed[_tokenId_], "NFT already claimed");
+        require(!_token.paused(), "Token is paused");
+        _token.mint(msg.sender, 500);
+        _downlineNFT.mint(msg.sender, 2);
+        //_presaleNFT.burn(_tokenId_);
     }
 
     /**
