@@ -87,39 +87,45 @@ contract Token {
     /**
      * @dev see {IERC20-name}.
      */
-    function name() external pure returns (string memory) {
+    function name() external pure returns (string memory)
+    {
         return 'Furio Token';
     }
 
     /**
      * @dev see {IERC20-symbol}.
      */
-    function symbol() external pure returns (string memory) {
+    function symbol() external pure returns (string memory)
+    {
         return '$FUR';
     }
 
-    function decimals() external pure returns (uint8) {
+    function decimals() external pure returns (uint8)
+    {
         return 18;
     }
 
     /**
      * @dev See {IERC20-balanceOf}.
      */
-    function balanceOf(address account_) public view returns (uint256) {
+    function balanceOf(address account_) public view returns (uint256)
+    {
         return _balances[account_];
     }
 
     /**
      * @dev See {IERC20-transfer}.
      */
-    function transfer(address to_, uint256 amount_) external isNotPaused returns (bool) {
+    function transfer(address to_, uint256 amount_) external isNotPaused returns (bool)
+    {
         return _internalTransfer(msg.sender, to_, amount_, taxRate());
     }
 
     /**
      * @dev See {IERC20-transferFrom}.
      */
-    function transferFrom(address from_, address to_, uint256 amount_) external isNotPaused returns (bool) {
+    function transferFrom(address from_, address to_, uint256 amount_) external isNotPaused returns (bool)
+    {
         uint256 _allowance_ = allowance(from_, to_);
         require(_allowance_ >= amount_, "Insufficient allowance");
         _allowances[from_][to_] -= amount_;
@@ -129,7 +135,8 @@ contract Token {
     /**
      * @dev See {IERC20-approve}.
      */
-    function approve(address spender_, uint256 amount_) external isNotPaused returns (bool) {
+    function approve(address spender_, uint256 amount_) external isNotPaused returns (bool)
+    {
         _allowances[msg.sender][spender_] = amount_;
         return true;
     }
@@ -137,7 +144,8 @@ contract Token {
     /**
      * @dev See {IERC20-allowance}.
      */
-    function allowance(address owner_, address spender_) public view isNotPaused returns (uint256) {
+    function allowance(address owner_, address spender_) public view isNotPaused returns (uint256)
+    {
         return _allowances[owner_][spender_];
     }
 
@@ -151,7 +159,8 @@ contract Token {
      * Effective tax rate.
      * @notice This returns the combined tax rate for all taxes.
      */
-    function taxRate() public view returns (uint256) {
+    function taxRate() public view returns (uint256)
+    {
         return burnTax + liquidityTax + vaultTax + devTax;
     }
 
@@ -290,7 +299,8 @@ contract Token {
      * @param amount_ Amount of tokens to mint.
      * @notice Only other Furio contracts can call this method.
      */
-    function mint(address to_, uint256 amount_) external trusted {
+    function mint(address to_, uint256 amount_) external trusted
+    {
         totalSupply += amount_;
         _balances[to_] += amount_;
         emit Transfer(address(0), to_, amount_);
@@ -307,7 +317,8 @@ contract Token {
      * @param amount_ Amount of tokens to burn.
      * @notice Only other Furio contracts can call this method.
      */
-    function burn(address from_, uint256 amount_) external trusted {
+    function burn(address from_, uint256 amount_) external trusted
+    {
         require(_balances[from_] >= amount_, "Insufficient funds");
         _balances[from_] -= amount_;
         totalSupply -= amount_;
@@ -337,10 +348,10 @@ contract Token {
         if(taxRate_ > 0) {
             uint256 _tax_ = amount_ * taxRate_ / 100;
             uint256 _totalTaxRate_ = taxRate();
-            uint256 _burnTax_ = _tax_ * (burnTax / _totalTaxRate_) / 100;
-            uint256 _liquidityTax_ = _tax_ * (liquidityTax / _totalTaxRate_) / 100;
-            uint256 _vaultTax_ = _tax_ * (vaultTax / _totalTaxRate_) / 100;
-            uint256 _devTax_ = _tax_ * (devTax / _totalTaxRate_) / 100;
+            uint256 _burnTax_ = _tax_ * burnTax / _totalTaxRate_;
+            uint256 _liquidityTax_ = _tax_ * liquidityTax / _totalTaxRate_;
+            uint256 _vaultTax_ = _tax_ * vaultTax / _totalTaxRate_;
+            uint256 _devTax_ = _tax_ * devTax / _totalTaxRate_;
             if(_burnTax_ > 0) {
                 totalSupply -= _burnTax_;
                 emit Transfer(from_, address(0), _burnTax_);
@@ -374,7 +385,8 @@ contract Token {
      * Update stats.
      * @param player_ Address of player to update.
      */
-    function _updateStats(address player_) internal {
+    function _updateStats(address player_) internal
+    {
         if(stats[player_].transactions == 0) {
             players ++;
         }

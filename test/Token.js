@@ -205,6 +205,70 @@ describe("Token", function () {
         await expect(token.connect(addr1).protectedTransfer(owner.address, addr1.address, "10000000000000000", 0)).to.be.revertedWith("Unauthorized");
         expect(await token.balanceOf(owner.address)).to.equal("10000000000000000");
     });
+    // TAXES
+    it("Can burn taxes", async function () {
+        await expect(token.unpause()).to.not.be.reverted;
+        await expect(token.setVaultTax(0)).to.not.be.reverted;
+        await expect(token.setBurnTax(10)).to.not.be.reverted;
+        expect(await token.taxRate()).to.equal(10);
+        await expect(token.setVault(owner.address)).to.not.be.reverted;
+        await expect(token.mint(addr1.address, "100")).to.not.be.reverted;
+        await expect(token.connect(addr1).transfer(addr2.address, "100")).to.not.be.reverted;
+        expect(await token.balanceOf(addr2.address)).to.equal("90");
+        expect(await token.totalSupply()).to.equal("90");
+    });
+    it("Can send taxes to liquidity pool", async function () {
+        await expect(token.unpause()).to.not.be.reverted;
+        await expect(token.setVaultTax(0)).to.not.be.reverted;
+        await expect(token.setLiquidityTax(10)).to.not.be.reverted;
+        expect(await token.taxRate()).to.equal(10);
+        await expect(token.setPool(owner.address)).to.not.be.reverted;
+        await expect(token.mint(addr1.address, "100")).to.not.be.reverted;
+        await expect(token.connect(addr1).transfer(addr2.address, "100")).to.not.be.reverted;
+        expect(await token.balanceOf(addr2.address)).to.equal("90");
+        expect(await token.balanceOf(owner.address)).to.equal("10");
+        expect(await token.totalSupply()).to.equal("100");
+    });
+    it("Can send taxes to vault", async function () {
+        await expect(token.unpause()).to.not.be.reverted;
+        await expect(token.setVaultTax(10)).to.not.be.reverted;
+        expect(await token.taxRate()).to.equal(10);
+        await expect(token.setVault(owner.address)).to.not.be.reverted;
+        await expect(token.mint(addr1.address, "100")).to.not.be.reverted;
+        await expect(token.connect(addr1).transfer(addr2.address, "100")).to.not.be.reverted;
+        expect(await token.balanceOf(addr2.address)).to.equal("90");
+        expect(await token.balanceOf(owner.address)).to.equal("10");
+        expect(await token.totalSupply()).to.equal("100");
+    });
+    it("Can send taxes to dev wallet", async function () {
+        await expect(token.unpause()).to.not.be.reverted;
+        await expect(token.setVaultTax(0)).to.not.be.reverted;
+        await expect(token.setDevTax(10)).to.not.be.reverted;
+        expect(await token.taxRate()).to.equal(10);
+        await expect(token.setVault(owner.address)).to.not.be.reverted;
+        await expect(token.setDevWallet(owner.address)).to.not.be.reverted;
+        await expect(token.mint(addr1.address, "100")).to.not.be.reverted;
+        await expect(token.connect(addr1).transfer(addr2.address, "100")).to.not.be.reverted;
+        expect(await token.balanceOf(addr2.address)).to.equal("90");
+        expect(await token.balanceOf(owner.address)).to.equal("10");
+        expect(await token.totalSupply()).to.equal("100");
+    });
+    it("Can have multiple taxes", async function () {
+        await expect(token.unpause()).to.not.be.reverted;
+        await expect(token.setBurnTax(1)).to.not.be.reverted;
+        await expect(token.setLiquidityTax(3)).to.not.be.reverted;
+        await expect(token.setVaultTax(3)).to.not.be.reverted;
+        await expect(token.setDevTax(3)).to.not.be.reverted;
+        expect(await token.taxRate()).to.equal(10);
+        await expect(token.setPool(owner.address)).to.not.be.reverted;
+        await expect(token.setVault(owner.address)).to.not.be.reverted;
+        await expect(token.setDevWallet(owner.address)).to.not.be.reverted;
+        await expect(token.mint(addr1.address, "1000")).to.not.be.reverted;
+        await expect(token.connect(addr1).transfer(addr2.address, "1000")).to.not.be.reverted;
+        expect(await token.balanceOf(addr2.address)).to.equal("900");
+        expect(await token.balanceOf(owner.address)).to.equal("90");
+        expect(await token.totalSupply()).to.equal("990");
+    });
     // ERC20
     it("Can transfer owned tokens", async function () {
         await expect(token.unpause()).to.not.be.reverted;
