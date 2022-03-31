@@ -12,7 +12,7 @@ describe("Token", function () {
     // TESTS
     it("Token has correct data at deployment", async function () {
         expect(await token.burnTax()).to.equal(0);
-        expect(await token.contractAdmin()).to.equal(owner.address);
+        expect(await token.owner()).to.equal(owner.address);
         expect(await token.decimals()).to.equal(18);
         expect(await token.devTax()).to.equal(0);
         expect(await token.devWallet()).to.equal("0x0000000000000000000000000000000000000000");
@@ -33,11 +33,11 @@ describe("Token", function () {
     });
     // ADMIN
     it("Can set contract admin", async function () {
-        await expect(token.setContractAdmin(addr1.address)).to.not.be.reverted;
-        expect(await token.contractAdmin()).to.equal(addr1.address);
+        await expect(token.setContractOwner(addr1.address)).to.not.be.reverted;
+        expect(await token.owner()).to.equal(addr1.address);
     });
     it("Cannot set contract admin by non admin account", async function () {
-        await expect(token.connect(addr1).setContractAdmin(addr2.address)).to.be.revertedWith("Unauthorized");
+        await expect(token.connect(addr1).setContractOwner(addr2.address)).to.be.revertedWith("Unauthorized");
     });
     it("Can pause and unpause contract", async function () {
         expect(await token.paused()).to.equal(true);

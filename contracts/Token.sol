@@ -1,12 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./interfaces/IDevWallet.sol";
-import "./interfaces/IDownlineNFT.sol";
-import "./interfaces/IPool.sol";
-import "./interfaces/IPresaleNFT.sol";
-import "./interfaces/IVault.sol";
-
 /**
  * @title Token
  * @author Steve Harmeyer
@@ -14,9 +8,9 @@ import "./interfaces/IVault.sol";
  */
 contract Token {
     /**
-     * @dev Contract administrator address.
+     * @dev Contract owner address.
      */
-    address public contractAdmin;
+    address public owner;
 
     /**
      * @dev Paused state.
@@ -57,11 +51,11 @@ contract Token {
     /**
      * @dev Other contracts in the Furio ecosystem.
      */
-    IDevWallet public devWallet;
-    IDownlineNFT public downlineNFT;
-    IPool public pool;
-    IPresaleNFT public presaleNFT;
-    IVault public vault;
+    address public devWallet;
+    address public downlineNFT;
+    address public pool;
+    address public presaleNFT;
+    address public vault;
 
     /**
      * @dev Contract events.
@@ -74,8 +68,9 @@ contract Token {
     /**
      * @dev Contract constructor.
      */
-    constructor() {
-        contractAdmin = msg.sender;
+    constructor()
+    {
+        owner = msg.sender;
     }
 
     /**
@@ -108,7 +103,7 @@ contract Token {
     /**
      * @dev See {IERC20-balanceOf}.
      */
-    function balanceOf(address account_) public view returns (uint256)
+    function balanceOf(address account_) external view returns (uint256)
     {
         return _balances[account_];
     }
@@ -144,7 +139,7 @@ contract Token {
     /**
      * @dev See {IERC20-allowance}.
      */
-    function allowance(address owner_, address spender_) public view isNotPaused returns (uint256)
+    function allowance(address owner_, address spender_) public view returns (uint256)
     {
         return _allowances[owner_][spender_];
     }
@@ -157,7 +152,7 @@ contract Token {
 
     /**
      * Effective tax rate.
-     * @notice This returns the combined tax rate for all taxes.
+     * @dev This returns the combined tax rate for all taxes.
      */
     function taxRate() public view returns (uint256)
     {
@@ -171,18 +166,18 @@ contract Token {
      */
 
     /**
-     * Set contract admin.
-     * @param address_ The address of the admin wallet.
+     * Set contract owner.
+     * @param address_ The address of the owner wallet.
      */
-    function setContractAdmin(address address_) external admin
+    function setContractOwner(address address_) external onlyOwner
     {
-        contractAdmin = address_;
+        owner = address_;
     }
 
     /**
      * @dev Pause contract.
      */
-    function pause() external admin
+    function pause() external onlyOwner
     {
         paused = true;
     }
@@ -190,7 +185,7 @@ contract Token {
     /**
      * @dev Unpause contract.
      */
-    function unpause() external admin
+    function unpause() external onlyOwner
     {
         paused = false;
     }
@@ -199,53 +194,53 @@ contract Token {
      * Set dev wallet.
      * @param address_ The address of the dev wallet.
      */
-    function setDevWallet(address address_) external admin
+    function setDevWallet(address address_) external onlyOwner
     {
-        devWallet = IDevWallet(address_);
+        devWallet = address_;
     }
 
     /**
      * Set downline nft.
      * @param address_ The address of the downline nft.
      */
-    function setDownlineNFT(address address_) external admin
+    function setDownlineNFT(address address_) external onlyOwner
     {
-        downlineNFT = IDownlineNFT(address_);
+        downlineNFT = address_;
     }
 
     /**
      * Set pool.
      * @param address_ The address of the pool.
      */
-    function setPool(address address_) external admin
+    function setPool(address address_) external onlyOwner
     {
-        pool = IPool(address_);
+        pool = address_;
     }
 
     /**
      * Set presale NFT.
      * @param address_ The address of the presale NFT.
      */
-    function setPresaleNFT(address address_) external admin
+    function setPresaleNFT(address address_) external onlyOwner
     {
-        presaleNFT = IPresaleNFT(address_);
+        presaleNFT = address_;
     }
 
     /**
      * Set vault.
      * @param address_ The address of the vault.
      */
-    function setVault(address address_) external admin
+    function setVault(address address_) external onlyOwner
     {
-        vault = IVault(address_);
+        vault = address_;
     }
 
     /**
      * Set burn tax.
      * @param tax_ The amount of burn tax.
-     * @notice This tax is burnt forever.
+     * @dev This tax is burnt forever.
      */
-    function setBurnTax(uint256 tax_) external admin
+    function setBurnTax(uint256 tax_) external onlyOwner
     {
         burnTax = tax_;
     }
@@ -253,9 +248,9 @@ contract Token {
     /**
      * Set liquidity tax.
      * @param tax_ The amount of liquidity tax.
-     * @notice This tax is paid to the liquidity pool contract.
+     * @dev This tax is paid to the liquidity pool contract.
      */
-    function setLiquidityTax(uint256 tax_) external admin
+    function setLiquidityTax(uint256 tax_) external onlyOwner
     {
         liquidityTax = tax_;
     }
@@ -263,9 +258,9 @@ contract Token {
     /**
      * Set vault tax.
      * @param tax_ The amount of vault tax.
-     * @notice This tax is paid to the vault contract to fund rewards.
+     * @dev This tax is paid to the vault contract to fund rewards.
      */
-    function setVaultTax(uint256 tax_) external admin
+    function setVaultTax(uint256 tax_) external onlyOwner
     {
         vaultTax = tax_;
     }
@@ -273,9 +268,9 @@ contract Token {
     /**
      * Set dev tax.
      * @param tax_ The amount of dev tax.
-     * @notice This tax is paid to a dev wallet to fund further development.
+     * @dev This tax is paid to a dev wallet to fund further development.
      */
-    function setDevTax(uint256 tax_) external admin
+    function setDevTax(uint256 tax_) external onlyOwner
     {
         devTax = tax_;
     }
@@ -286,9 +281,9 @@ contract Token {
      * @param to_ The address to transfer to.
      * @param amount_ The amount to transfer.
      * @param taxRate_ The tax rate that should be applied.
-     * @notice Only other Furio contracts can call this method.
+     * @dev Only other Furio contracts can call this method.
      */
-    function protectedTransfer(address from_, address to_, uint256 amount_, uint256 taxRate_) public trusted returns (bool)
+    function protectedTransfer(address from_, address to_, uint256 amount_, uint256 taxRate_) external trusted returns (bool)
     {
         return _internalTransfer(from_, to_, amount_, taxRate_);
     }
@@ -297,7 +292,7 @@ contract Token {
      * Mint.
      * @param to_ Address to mint to.
      * @param amount_ Amount of tokens to mint.
-     * @notice Only other Furio contracts can call this method.
+     * @dev Only other Furio contracts can call this method.
      */
     function mint(address to_, uint256 amount_) external trusted
     {
@@ -315,7 +310,7 @@ contract Token {
      * Burn.
      * @param from_ Address to burn from.
      * @param amount_ Amount of tokens to burn.
-     * @notice Only other Furio contracts can call this method.
+     * @dev Only other Furio contracts can call this method.
      */
     function burn(address from_, uint256 amount_) external trusted
     {
@@ -400,17 +395,17 @@ contract Token {
      */
 
     /**
-     * @notice Requires sender to be admin. These are methods that will be
+     * @dev Requires caller to be owner. These are methods that will be
      * called by a trusted user.
      */
-    modifier admin()
+    modifier onlyOwner()
     {
-        require(msg.sender == contractAdmin, "Unauthorized");
+        require(msg.sender == owner, "Unauthorized");
         _;
     }
 
     /**
-     * @notice Requires callers is a trusted contract. These are automated
+     * @dev Requires callers is a trusted contract. These are automated
      * methods that facilitate Furio contract interaction.
      */
     modifier trusted()
@@ -426,7 +421,7 @@ contract Token {
     }
 
     /**
-     * @notice Requires the contract to not be paused.
+     * @dev Requires the contract to not be paused.
      */
     modifier isNotPaused()
     {
