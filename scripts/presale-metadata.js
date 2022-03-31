@@ -3,9 +3,9 @@ const fs = require("fs");
 async function main() {
     for(i = 1; i <= 300; i ++) {
         const metadata = {
-            name: "FUR Presale NFT #" + i,
+            name: "Furio Presale NFT #" + i,
             description: "This NFT is redeemable for 500 $FUR tokens and 2 $FURNFT tokens",
-            image: "ipfs://QmP5wfp6UcaGYdAqXYf35qTRGsvY7Z7KH9HXqmAC6pq9DR/furio-presale.png",
+            image: "ipfs://QmVf9s2Sn5vVeXJR7YsCSr8hVYL2Rpb9uHnVZBn2Z8Qz1t/furio-presale.png",
             external_url: "https://furio.io"
         }
         const jsonString = JSON.stringify(metadata);

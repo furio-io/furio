@@ -2,9 +2,11 @@
 pragma solidity ^0.8.0;
 
 // INTERFACES
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
+import "@openzeppelin/contracts/interfaces/IERC165.sol";
+import "@openzeppelin/contracts/interfaces/IERC20.sol";
+import "@openzeppelin/contracts/interfaces/IERC721.sol";
+import "@openzeppelin/contracts/interfaces/IERC721Metadata.sol";
+import "./interfaces/IDownlineNFT.sol";
 import "./interfaces/IToken.sol";
 
 /**
@@ -32,7 +34,12 @@ contract PresaleNFT {
     /**
      * @dev $FUR token.
      */
-    IToken public furToken;
+    IToken public token;
+
+    /**
+     * @dev $FURNFT token.
+     */
+    IDownlineNFT public downlineNft;
 
     /**
      * @dev Pool address.
@@ -60,6 +67,7 @@ contract PresaleNFT {
     mapping(uint256 => address) public ownerOf;
     mapping(uint256 => address) private _tokenApprovals;
     mapping(address => mapping(address => bool)) private _operatorApprovals;
+    string public baseURI = 'ipfs://QmSZhsoYWeb9gCXAaGDe7vs9AVFPxr5nn2GWxicBKKouui/';
 
     /**
      * @dev Contract events.
@@ -67,6 +75,8 @@ contract PresaleNFT {
     event Transfer(address indexed from_, address indexed to_, uint256 indexed tokenId_);
     event Approval(address indexed owner_, address indexed approved_, uint256 indexed tokenId_);
     event ApprovalForAll(address indexed owner_, address indexed operator_, bool approved_);
+    event Minted(address indexed to_, uint256 indexed tokenId_);
+    event Claimed(uint256 indexed tokenId_);
 
     /**
      * @dev Contract constructor.
@@ -104,7 +114,7 @@ contract PresaleNFT {
     function tokenURI(uint256 tokenId_) external view returns (string memory)
     {
         require(_exists[tokenId_], "Token does not exist");
-        return string(abi.encodePacked("ipfs://QmdVos2MHKUWLuRHthJ4ADS6JNgWJNNgHMBqAm8Nt21JPE", tokenId_));
+        return string(abi.encodePacked(baseURI, tokenId_));
     }
 
     /**
@@ -185,7 +195,10 @@ contract PresaleNFT {
      */
     function supportsInterface(bytes4 interfaceId_) external pure returns (bool)
     {
-        return interfaceId_ == type(IERC721).interfaceId || interfaceId_ == type(IERC721Metadata).interfaceId;
+        return
+            interfaceId_ == type(IERC165).interfaceId ||
+            interfaceId_ == type(IERC721).interfaceId ||
+            interfaceId_ == type(IERC721Metadata).interfaceId;
     }
 
     /**
@@ -232,7 +245,15 @@ contract PresaleNFT {
      */
     function setFurToken(address address_) external onlyOwner
     {
-        furToken = IToken(address_);
+        token = IToken(address_);
+    }
+
+    /**
+     * @dev Set downline NFT.
+     */
+    function setDownlineNft(address address_) external onlyOwner
+    {
+        downlineNft = IDownlineNFT(address_);
     }
 
     /**
@@ -241,6 +262,54 @@ contract PresaleNFT {
     function addPresaleWallet(address address_) external onlyOwner
     {
         _presaleWallets[address_] = true;
+    }
+
+    /**
+     * @dev Set max supply.
+     */
+    function setMaxSupply(uint256 supply_) external onlyOwner
+    {
+        maxSupply = supply_;
+    }
+
+    /**
+     * @dev Set max per user.
+     */
+    function setMaxPerUser(uint256 max_) external onlyOwner
+    {
+        maxPerUser = max_;
+    }
+
+    /**
+     * @dev Set price.
+     */
+    function setPrice(uint256 price_) external onlyOwner
+    {
+        price = price_;
+    }
+
+    /**
+     * @dev Set token value.
+     */
+    function setTokenValue(uint256 value_) external onlyOwner
+    {
+        tokenValue = value_;
+    }
+
+    /**
+     * @dev Set NFT value.
+     */
+    function setNftValue(uint256 value_) external onlyOwner
+    {
+        nftValue = value_;
+    }
+
+    /**
+     * @dev Set base URI.
+     */
+    function setBaseURI(string memory baseURI_) external onlyOwner
+    {
+        baseURI = baseURI_;
     }
 
     /**
@@ -265,7 +334,7 @@ contract PresaleNFT {
         require(!paused || _presaleWallets[msg.sender], "Sale is not open");
         require(address(paymentToken) != address(0), "Payment token not set");
         require(poolAddress != address(0), "Pool address not set");
-        require(paymentToken.transferFrom(msg.sender, poolAddress, price, "Transfer failed");
+        require(paymentToken.transferFrom(msg.sender, poolAddress, price), "Transfer failed");
         _mint(msg.sender);
     }
 
@@ -274,7 +343,27 @@ contract PresaleNFT {
      */
     function claim() external
     {
-
+        require(balanceOf[msg.sender] > 0, "No NFTs owned");
+        require(address(token) != address(0), "$FUR token not set");
+        require(address(downlineNft) != address(0), "NFT token not set");
+        require(!token.paused(), "$FUR token is paused");
+        require(!downlineNft.paused(), "$FURNFT token is paused");
+        token.mint(msg.sender, tokenValue);
+        downlineNft.mint(msg.sender, nftValue);
+        uint256 _tokenId_ = 0;
+        for(uint256 i = 1; i <= totalSupply; i++) {
+            if(ownerOf[i] == msg.sender) {
+                _tokenId_ = i;
+                break;
+            }
+        }
+        balanceOf[msg.sender] -= 1;
+        delete _tokenApprovals[_tokenId_];
+        delete ownerOf[_tokenId_];
+        delete _exists[_tokenId_];
+        totalSupply --;
+        emit Transfer(msg.sender, address(0), _tokenId_);
+        emit Claimed(_tokenId_);
     }
 
     /**
@@ -289,9 +378,12 @@ contract PresaleNFT {
         require(balanceOf[to_] < maxPerUser, "User has max");
         _currentTokenId ++;
         totalSupply ++;
+        totalCreated ++;
         balanceOf[to_] += 1;
         ownerOf[_currentTokenId] = to_;
+        _exists[_currentTokenId] = true;
         emit Transfer(address(0), to_, _currentTokenId);
+        emit Minted(to_, _currentTokenId);
     }
 
     /**

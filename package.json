@@ -20,6 +20,7 @@
         "@openzeppelin/contracts": "^4.5.0",
         "@openzeppelin/contracts-upgradeable": "^4.5.2",
         "@popperjs/core": "^2.11.2",
+        "@sushiswap/core": "github:sushiswap/sushiswap",
         "@walletconnect/web3-provider": "^1.7.3",
         "analytics": "^0.8.0",
         "axios": "^0.21.4",

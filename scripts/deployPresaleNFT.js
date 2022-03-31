@@ -22,16 +22,21 @@ const _familyWallets = [
     "0xb3eDA828585C2A49E0FF1DEc2DB2D270Ca162dBf"
 ];
 
-async function deployPresaleNFT() {
+async function main() {
     const [deployer] = await hre.ethers.getSigners();
     // deploy Token
     PresaleNFT = await ethers.getContractFactory("PresaleNFT");
     presalenft = await PresaleNFT.deploy();
+    for(i = 0; i < _teamWallets.length; i ++) {
+        await presalenft.mint(_teamWallets[i]);
+    }
+    for(i = 0; i < _familyWallets.length; i ++) {
+        await presalenft.addPresaleWallet(_familyWallets[i]);
+    }
     console.log("Presale NFT deployed to", presalenft.address);
-    return presalenft.address;
 }
 
-deployPresaleNFT()
+main()
     .then(() => process.exit(0))
     .catch((error) => {
         console.error(error);
