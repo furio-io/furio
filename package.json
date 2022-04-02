@@ -18,7 +18,6 @@
         "@nomiclabs/hardhat-waffle": "^2.0.3",
         "@nomiclabs/hardhat-web3": "^2.0.0",
         "@openzeppelin/contracts": "^4.5.0",
-        "@openzeppelin/contracts-upgradeable": "^4.5.2",
         "@popperjs/core": "^2.11.2",
         "@sushiswap/core": "github:sushiswap/sushiswap",
         "@walletconnect/web3-provider": "^1.7.3",
@@ -33,21 +32,17 @@
         "hardhat": "^2.9.0",
         "hardhat-gas-reporter": "^1.0.8",
         "laravel-mix": "^6.0.6",
-        "lodash": "^4.17.19",
         "node-polyfill-webpack-plugin": "^1.1.4",
         "postcss": "^8.1.14",
         "resolve-url-loader": "^4.0.0",
         "sass": "^1.49.9",
         "sass-loader": "^12.6.0",
-        "sol-merger": "^4.0.0",
         "vue": "^3.2.31",
         "vue-loader": "^16.8.3",
+        "vue-recaptcha-v3": "^2.0.1",
         "vue-router": "^4.0.13",
         "vuex": "^4.0.2",
         "walletlink": "^2.5.0",
         "web3": "^1.7.1"
-    },
-    "dependencies": {
-        "vue-recaptcha-v3": "^2.0.1"
     }
 }
