@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "../views/Home.vue";
-import Whitelist from "../views/Whitelist.vue";
+import Presale from "../views/Presale.vue";
 import Furswap from "../views/Furswap.vue";
 import Vault from "../views/Vault.vue";
 import Liquidity from "../views/Liquidity.vue";
@@ -13,9 +13,9 @@ const routes = [
         component: Home,
     },
     {
-        path: "/whitelist",
-        name: "Whitelist",
-        component: Whitelist,
+        path: "/presale",
+        name: "Presale",
+        component: Presale,
     },
     {
         path: "/furswap",

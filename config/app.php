@@ -195,8 +195,12 @@ return [
     ])->toArray(),
 
     'tag_manager_container_id' => env('TAG_MANAGER_CONTAINER_ID'),
-    'network_id' => env('NETWORK_ID', 62621),
-    'network_name' => env('NETWORK_NAME', 'MultiVAC Mainnet'),
-    'rpc' => env('RPC', 'https://rpc.mtv.ac'),
+    'network_id' => env('NETWORK_ID', 4),
+    'network_name' => env('NETWORK_NAME', 'Rinkeby Testnet'),
+    'rpc' => env('RPC', 'https://rinkeby.infura.io/v3/b8e7a65f07574f89a1424b075a31f605'),
     'recaptcha' => env('RECAPTCHA'),
+    'usdc_address' => env('USDC_ADDRESS'),
+    'usdc_abi' => env('USDC_ABI'),
+    'presale_nft_address' => env('PRESALE_NFT_ADDRESS'),
+    'presale_nft_abi' => env('PRESALE_NFT_ABI'),
 ];

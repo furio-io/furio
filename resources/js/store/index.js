@@ -1,48 +1,77 @@
 import { createStore } from "vuex";
-import Web3 from "web3";
 
 export default createStore({
-   state: {
-       web3: new Web3(),
-       notice: null,
-       alert: null,
-       wallet: null,
-       connected: false,
-       account: null,
-       address: null,
-   },
-   mutations: {
-       notice(state, notice) {
-           state.notice = notice;
-       },
-       alert(state, alert) {
-           state.alert = alert;
-       },
-       wallet(state, wallet) {
-           state.wallet = wallet;
-       },
-       provider(state, provider) {
-           state.web3.setProvider(provider);
-       },
-       connect: async function (state) {
-            try {
-                state.alert = null;
-                await state.web3.currentProvider.enable();
-                const accounts = await state.web3.eth.getAccounts();
-                state.account = accounts[0];
-                state.connected = true;
-                await axios.post('/api/v1/address', {
-                    address: state.account,
-                }).then(response => {
-                    state.address = response.data.data;
-                }).catch(error => {});
-                //this.updateSession();
-            } catch (error) {
-                state.alert = error.message;
-                return false;
+    state: {
+        networkId: null,
+        networkName: null,
+        rpc: null,
+        recaptcha: null,
+        notice: null,
+        alert: null,
+        wallet: null,
+        connected: false,
+        account: null,
+        address: {
+            type: 'addresses',
+            id: null,
+            attributes: {
+                address: null,
+                nonce: null,
+                logged_in: null,
+                name: null,
+                email: null,
+                email_verified_at: null,
+                created_at: null,
+                updated_at: null,
             }
-            state.notice = null;
-            state.connected = true;
-       }
+        },
+        usdcAddress: null,
+        usdcAbi: null,
+        presaleNftAddress: null,
+        presaleNftAbi: null,
+    },
+   mutations: {
+       networkId(state, value) {
+           state.networkId = value;
+       },
+       networkName(state, value) {
+           state.networkName = value;
+       },
+       rpc(state, value) {
+           state.rpc = value;
+       },
+       recaptcha(state, value) {
+           state.recaptcha = value;
+       },
+       notice(state, value) {
+           state.notice = value;
+       },
+       alert(state, value) {
+           state.alert = value;
+       },
+       wallet(state, value) {
+           state.wallet = value;
+       },
+       connected(state, value) {
+           state.connected = value;
+       },
+       account(state, value) {
+           state.account = value;
+       },
+       address(state, value) {
+           state.address = value;
+       },
+       usdcAddress(state, value) {
+           state.usdcAddress = value;
+       },
+       usdcAbi(state, value) {
+           state.usdcAbi = value;
+       },
+       presaleNftAddress(state, value) {
+           state.presaleNftAddress = value;
+       },
+       presaleNftAbi(state, value) {
+           state.presaleNftAbi = value;
+       },
    }
 });

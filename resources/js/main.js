@@ -1,9 +1,5 @@
 // Get Props
 let tagManagerContainerId = document.head.querySelector('meta[name="tag-manager-container-id"]');
-let networkId = document.head.querySelector('meta[name="network-id"]');
-let networkName = document.head.querySelector('meta[name="network-name"]');
-let rpc = document.head.querySelector('meta[name="rpc"]');
-let recaptcha = document.head.querySelector('meta[name="recaptcha"]');
 // Bootstrap
 import "bootstrap";
 // Axios
@@ -20,15 +16,17 @@ window.analytics = Analytics({
         }),
     ],
 });
+// Web3
+import Web3 from "web3";
+window.web3 = new Web3();
 // Vue
 import { createApp } from "vue";
 import { VueReCaptcha } from "vue-recaptcha-v3";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-createApp(App, {
-    networkId: networkId.content,
-    networkName: networkName.content,
-    rpc: rpc.content,
-    recaptcha: recaptcha.content,
+createApp({
+    components: {
+        App,
+    }
 }).use(router).use(store).use(VueReCaptcha).mount('#app');

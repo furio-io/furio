@@ -17,6 +17,10 @@ class App extends Controller
             'networkName' => config('app.network_name', 'Rinkeby Testnet'),
             'rpc' => config('app.rpc', 'https://rpc.mtv.ac'),
             'recaptcha' => config('app.recaptcha'),
+            'usdcAddress' => config('app.usdc_address'),
+            'usdcAbi' => config('app.usdc_abi'),
+            'presaleNftAddress' => config('app.presale_nft_address'),
+            'presaleNftAbi' => config('app.presale_nft_abi'),
         ]);
     }
 }

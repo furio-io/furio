@@ -14,6 +14,24 @@ class Session extends Controller
      */
     public function __invoke(Request $request)
     {
-        return $request->session()->get('web3', []);
+        return $request->session()->get('web3', [
+            'wallet' => null,
+            'account' => null,
+            'connected' => false,
+            'address' => [
+                'type' => 'addresses',
+                'id' => null,
+                'attributes' => [
+                    'address' => null,
+                    'nonce' => null,
+                    'logged_in' => false,
+                    'name' => null,
+                    'email' => null,
+                    'email_verified_at' => null,
+                    'created_at' => null,
+                    'updated_at' => null,
+                ],
+            ]
+        ]);
     }
 }

@@ -1,12 +1,13 @@
 const { ethers } = require("hardhat");
 const hre = require("hardhat");
 
+
 async function main() {
     const [deployer] = await hre.ethers.getSigners();
-    // deploy Token
-    PresaleNFT = await ethers.getContractFactory("PresaleNFT");
-    presalenft = await PresaleNFT.deploy();
-    console.log("Presale NFT deployed to", presalenft.address);
+    // deploy USDC
+    USDC = await ethers.getContractFactory("MockUSDC");
+    usdc = await USDC.deploy();
+    console.log("USDC deployed to", usdc.address);
 }
 
 main()

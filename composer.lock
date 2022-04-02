@@ -4,8 +4,72 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "40f2b89f7d9e8ee85598635477dca082",
+    "content-hash": "59e4e5939e7e0cb0b5aee8a94dbfb826",
     "packages": [
+        {
+            "name": "betterapp/laravel-db-encrypter",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/betterapp/laravel-db-encrypter.git",
+                "reference": "156e78839cbb9d0825ba4fe8f7f191ed11a625e5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/betterapp/laravel-db-encrypter/zipball/156e78839cbb9d0825ba4fe8f7f191ed11a625e5",
+                "reference": "156e78839cbb9d0825ba4fe8f7f191ed11a625e5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "betterapp\\LaravelDbEncrypter\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Daniel Czestki",
+                    "email": "daniel@betterapp.net",
+                    "homepage": "https://github.com/betterapp",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Provides database model attribute encryption/decryption",
+            "keywords": [
+                "attribute",
+                "database",
+                "database encrypter",
+                "database encryption",
+                "decrypt",
+                "decrypted",
+                "decryption",
+                "eloquent",
+                "encrypt",
+                "encrypter",
+                "encryption",
+                "laravel",
+                "laravel attribute encrypter",
+                "laravel attribute encryption",
+                "laravel database encrypter",
+                "laravel database encryption",
+                "laravel db encrypter",
+                "laravel db encryption",
+                "laravel model encrypter",
+                "laravel model encryption"
+            ],
+            "support": {
+                "issues": "https://github.com/betterapp/laravel-db-encrypter/issues",
+                "source": "https://github.com/betterapp/laravel-db-encrypter/tree/v1.0.0"
+            },
+            "time": "2020-08-27T17:17:31+00:00"
+        },
         {
             "name": "brick/math",
             "version": "0.9.3",
