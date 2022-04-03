@@ -58,8 +58,8 @@ contract PresaleNFT {
     uint256 public totalCreated;
     uint256 public maxSupply = 300;
     uint256 public maxPerUser = 1;
-    uint256 public price = 250e16;
-    uint256 public tokenValue = 500e16;
+    uint256 public price = 250e18;
+    uint256 public tokenValue = 500e18;
     uint256 public nftValue = 2;
     uint256 private _currentTokenId;
     mapping(uint256 => bool) private _exists;

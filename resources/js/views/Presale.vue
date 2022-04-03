@@ -111,7 +111,6 @@
                     gas = Math.round(await contract.value.methods.buy().estimateGas({ from: store.state.account, gasPrice: gasPrice}) * 1.0);
                     const result = await contract.value.methods.buy().send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
                     console.log(result);
-                    alert(maxPerUser.value);
                 } catch (error) {
                     store.commit("alert", error.message);
                 }
