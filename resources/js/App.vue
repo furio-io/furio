@@ -18,9 +18,6 @@
                     <li class="nav-item">
                         <router-link :to="{ name: 'Vault' }" class="nav-link" active-class="active">Vault</router-link>
                     </li>
-                    <li class="nav-item">
-                        <router-link :to="{ name: 'Liquidity' }" class="nav-link" active-class="active">Liquidity</router-link>
-                    </li>
                 </ul>
                 <!-- END PRIMARY NAVIGATION -->
                 <div class="d-flex">

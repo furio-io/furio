@@ -137,6 +137,10 @@
                 await axios.post('/api/v1/logout');
             }
 
+            async function getSettings() {
+
+            }
+
             return {
                 store,
                 shortAccount,

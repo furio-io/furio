@@ -23,7 +23,7 @@
 </template>
 
 <script>
-    import { ref } from "vue";
+    import { computed, onMounted, ref, watch } from "vue";
     import { useStore } from "vuex";
 
     export default {
@@ -31,15 +31,36 @@
             const store = useStore();
             const email = ref(null);
             const verification = ref(null);
-            const maxPerUser = ref(0);
-            const maxSupply = ref(0);
-            const price = ref(0);
-            const totalCreated = ref(0);
-            const tokenValue = ref(0);
-            const nftValue = ref(0);
-            const paymentToken = ref(null);
-            const usdContract = ref(null);
-            const presaleNftContract = ref(null);
+            const contract = ref(null);
+            const paymentContract = ref(null);
+            const balance = ref(null);
+            const maxPerUser = ref(null);
+            const maxSupply = ref(null);
+            const nftValue = ref(null);
+            const paused = ref(null);
+            const price = ref(null);
+            const tokenValue = ref(null);
+            const totalCreated = ref(null);
+
+            const connected = computed(() => {
+                return store.state.connected;
+            });
+
+            onMounted(async function () {
+                //alert('hello');
+            });
+
+            watch(connected, async function (currentValue, oldValue) {
+                if(oldValue) {
+                    return;
+                }
+                if(!currentValue) {
+                    return;
+                }
+                if(!maxPerUser.value) {
+                    getContractData();
+                }
+            });
 
             async function submitEmail() {
                 await axios.post('/api/v1/address', {
@@ -66,17 +87,33 @@
             }
 
             async function getContractData() {
-                if(store.state.connected) {
-                    presaleNftContract = new web3.eth.Contract(JSON.parse(store.state.presaleNftAbi), store.state.presaleNftAddress);
-                    paymentToken = await presaleNftContract.value.methods.paymentToken().call();
-                    usdcContract = new web3.eth.Contract(JSON.parse(store.state.usdcAbi), paymentToken.value);
-                    maxPerUser = await presaleNftContract.value.methods.maxPerUser().call();
+                try {
+                    contract.value = new web3.eth.Contract(JSON.parse(store.state.presaleNftAbi), store.state.presaleNftAddress);
+                    paymentContract.value = new web3.eth.Contract(JSON.parse(store.state.usdcAbi), store.state.usdcAddress);
+                    balance.value = await contract.value.methods.balanceOf(store.state.account).call();
+                    maxPerUser.value = await contract.value.methods.maxPerUser().call();
+                    maxSupply.value = await contract.value.methods.maxSupply().call();
+                    nftValue.value = await contract.value.methods.nftValue().call();
+                    paused.value = await contract.value.methods.paused().call();
+                    price.value = await contract.value.methods.price().call();
+                    tokenValue.value = await contract.value.methods.tokenValue().call();
+                    totalCreated.value = await contract.value.methods.totalCreated().call();
+                } catch (error) {
+                    store.commit("alert", error.message);
                 }
             }
 
             async function purchase() {
-                getContractData();
-                alert(maxPerUser.value);
+                try {
+                    const gasPrice = await web3.eth.getGasPrice();
+                    alert(gasPrice);
+                    await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account, gasPrice: gasPrice });
+                    const result = await contract.value.methods.buy().send({ from: store.state.account, gasPrice: gasPrice});
+                    console.log(result);
+                    alert(maxPerUser.value);
+                } catch (error) {
+                    store.commit("alert", error.message);
+                }
             }
 
             return {
@@ -86,7 +123,14 @@
                 submitEmail,
                 submitVerification,
                 purchase,
+                balance,
                 maxPerUser,
+                maxSupply,
+                nftValue,
+                paused,
+                price,
+                tokenValue,
+                totalCreated,
             }
         }
 
