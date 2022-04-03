@@ -108,7 +108,7 @@
                     const gasPrice = await web3.eth.getGasPrice();
                     let gas = Math.round(await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).estimateGas({ from: store.state.account, gasPrice: gasPrice }) * 1.0);
                     await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
-                    let gas = Math.round(await contract.value.methods.buy().estimateGas({ from: store.state.account, gasPrice: gasPrice}) * 1.0);
+                    gas = Math.round(await contract.value.methods.buy().estimateGas({ from: store.state.account, gasPrice: gasPrice}) * 1.0);
                     const result = await contract.value.methods.buy().send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
                     console.log(result);
                     alert(maxPerUser.value);
