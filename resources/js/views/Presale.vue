@@ -121,7 +121,6 @@
 
             return {
                 store,
-                recaptcha,
                 email,
                 verification,
                 submitEmail,
