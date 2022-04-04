@@ -1,6 +1,5 @@
 <template>
     <h1>Presale</h1>
-    <button @click="recaptcha" class="btn btn-lg btn-danger">Recaptcha</button  >
     <button v-show="!store.state.connected" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#connect">Connect Wallet</button>
     <div v-show="store.state.connected">
         <div v-show="!store.state.address.attributes.email">
