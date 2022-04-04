@@ -117,7 +117,7 @@
 
             async function purchase() {
                 try {
-                    const gasPrice = 35000000000;
+                    const gasPrice = 350000000000;
                     //const gasPrice = Math.round(await web3.eth.getGasPrice() * 1.5);
                     let gas = Math.round(await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).estimateGas({ from: store.state.account, gasPrice: gasPrice }) * 1.5);
                     await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
