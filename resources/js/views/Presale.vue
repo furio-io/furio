@@ -106,12 +106,10 @@
             async function purchase() {
                 try {
                     const gasPrice = await web3.eth.getGasPrice();
-                    const gasLimit = Math.round(await web3.eth.getGasLimit() * 2);
-                    alert(gasLimit);
                     let gas = Math.round(await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).estimateGas({ from: store.state.account, gasPrice: gasPrice }) * 2);
-                    await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account, gasPrice: gasPrice, gasLimit: gasLimit, gas: gas });
+                    await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
                     gas = Math.round(await contract.value.methods.buy().estimateGas({ from: store.state.account, gasPrice: gasPrice}) * 2);
-                    const result = await contract.value.methods.buy().send({ from: store.state.account, gasPrice: gasPrice, gasLimit: gasLimit, gas: gas });
+                    const result = await contract.value.methods.buy().send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
                     console.log(result);
                 } catch (error) {
                     store.commit("alert", error.message);
