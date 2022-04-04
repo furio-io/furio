@@ -119,10 +119,11 @@
                 try {
                     const gasPrice = await web3.eth.getGasPrice();
                     const gasLimit = await web3.eth.getGasLimit();
+                    alert(gasLimit);
                     //let gas = Math.round(await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).estimateGas({ from: store.state.account, gasPrice: gasPrice }) * 2);
-                    await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ value: 0, from: store.state.account, gasPrice: gasPrice, gasLimit: gasLimit });
+                    await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account, gasPrice: gasPrice, gasLimit: gasLimit });
                     //gas = Math.round(await contract.value.methods.buy().estimateGas({ from: store.state.account, gasPrice: gasPrice}) * 2);
-                    const result = await contract.value.methods.buy().send({ value: 0, from: store.state.account, gasPrice: gasPrice, gasLimit: gasLimit });
+                    const result = await contract.value.methods.buy().send({ from: store.state.account, gasPrice: gasPrice, gasLimit: gasLimit });
                     console.log(result);
                 } catch (error) {
                     store.commit("alert", error.message);
