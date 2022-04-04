@@ -8,13 +8,17 @@ async function main() {
     usdc = await USDC.deploy();
     console.log("USDC deployed to", usdc.address);
     await usdc.mint(deployer.address, "250000000000000000000");
-    // deploy Token
+    // deploy presale
     PresaleNFT = await ethers.getContractFactory("PresaleNFT");
     presalenft = await PresaleNFT.deploy();
     console.log("Presale NFT deployed to", presalenft.address);
     await presalenft.setPaymentToken(usdc.address);
     await presalenft.setDevWallet(deployer.address);
     await presalenft.unpause();
+    // deploy token
+    Token = await ethers.getContractFactory("Token");
+    token = await Token.deploy();
+    console.log("Token deployed to", token.address);
 }
 
 main()

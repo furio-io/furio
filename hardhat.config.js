@@ -47,6 +47,10 @@ module.exports = {
       url: process.env.MAINNET_RPC_URL || '',
       accounts: accounts,
     },
+    mumbai: {
+        url: process.env.MUMBAI_RPC_URL || '',
+        accounts: accounts,
+    },
     polygon: {
         url: process.env.POLYGON_RPC_URL || '',
         accounts: accounts,
