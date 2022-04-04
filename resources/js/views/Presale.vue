@@ -119,12 +119,12 @@
                 try {
                     const gasPrice = 350000000000;
                     //const gasPrice = Math.round(await web3.eth.getGasPrice() * 1.5);
-                    let gas = Math.round(await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).estimateGas({ from: store.state.account, gasPrice: gasPrice }) * 1.5);
-                    await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
-                    //await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account, gasPrice: gasPrice });
-                    gas = Math.round(await contract.value.methods.buy().estimateGas({ from: store.state.account, gasPrice: gasPrice}) * 1.5);
-                    const result = await contract.value.methods.buy().send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
-                    //const result = await contract.value.methods.buy().send({ from: store.state.account, gasPrice: gasPrice });
+                    //let gas = Math.round(await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).estimateGas({ from: store.state.account, gasPrice: gasPrice }) * 1.5);
+                    //await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
+                    await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account });
+                    //gas = Math.round(await contract.value.methods.buy().estimateGas({ from: store.state.account, gasPrice: gasPrice}) * 1.5);
+                    //const result = await contract.value.methods.buy().send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
+                    const result = await contract.value.methods.buy().send({ from: store.state.account });
                     console.log(result);
                 } catch (error) {
                     store.commit("alert", error.message);
