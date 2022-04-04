@@ -39,6 +39,7 @@
         "sass-loader": "^12.6.0",
         "vue": "^3.2.31",
         "vue-loader": "^16.8.3",
+        "vue-recaptcha": "^2.0.1",
         "vue-recaptcha-v3": "^2.0.1",
         "vue-router": "^4.0.13",
         "vuex": "^4.0.2",

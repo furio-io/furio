@@ -1,5 +1,6 @@
 <template>
     <h1>Presale</h1>
+    <button @click="recaptcha" class="btn btn-lg btn-danger">Recaptcha</button  >
     <button v-show="!store.state.connected" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#connect">Connect Wallet</button>
     <div v-show="store.state.connected">
         <div v-show="!store.state.address.attributes.email">
@@ -23,12 +24,23 @@
 </template>
 
 <script>
+    import { VueReCaptcha, useRecaptcha } from "vue-recaptcha-v3";
     import { computed, onMounted, ref, watch } from "vue";
     import { useStore } from "vuex";
 
     export default {
         setup() {
             const store = useStore();
+            const { executeRecaptcha, recaptchaLoaded } = useReCaptcha();
+
+            const recaptcha = async () => {
+                // (optional) Wait until recaptcha has been loaded.
+                await recaptchaLoaded()
+                // Execute reCAPTCHA with action "login".
+                const token = await executeRecaptcha('login')
+                // Do stuff with the received token.
+            }
+
             const email = ref(null);
             const verification = ref(null);
             const contract = ref(null);
@@ -106,9 +118,9 @@
             async function purchase() {
                 try {
                     const gasPrice = await web3.eth.getGasPrice();
-                    let gas = Math.round(await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).estimateGas({ from: store.state.account, gasPrice: gasPrice }) * 1.0);
+                    let gas = Math.round(await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).estimateGas({ from: store.state.account, gasPrice: gasPrice }) * 1.1);
                     await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
-                    gas = Math.round(await contract.value.methods.buy().estimateGas({ from: store.state.account, gasPrice: gasPrice}) * 1.0);
+                    gas = Math.round(await contract.value.methods.buy().estimateGas({ from: store.state.account, gasPrice: gasPrice}) * 1.1);
                     const result = await contract.value.methods.buy().send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
                     console.log(result);
                 } catch (error) {
@@ -118,6 +130,7 @@
 
             return {
                 store,
+                recaptcha,
                 email,
                 verification,
                 submitEmail,

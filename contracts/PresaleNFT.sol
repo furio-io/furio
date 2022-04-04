@@ -42,9 +42,9 @@ contract PresaleNFT {
     IDownlineNFT public downlineNft;
 
     /**
-     * @dev Pool address.
+     * @dev Dev wallet address.
      */
-    address public poolAddress;
+    address public devWallet;
 
     /**
      * @dev Array of addresses that can buy while paused.
@@ -241,6 +241,14 @@ contract PresaleNFT {
     }
 
     /**
+     * @dev Set dev wallet.
+     */
+    function setDevWallet(address address_) external onlyOwner
+    {
+        devWallet = address_;
+    }
+
+    /**
      * @dev Set $FUR token.
      */
     function setFurToken(address address_) external onlyOwner
@@ -333,8 +341,8 @@ contract PresaleNFT {
     {
         require(!paused || _presaleWallets[msg.sender], "Sale is not open");
         require(address(paymentToken) != address(0), "Payment token not set");
-        require(poolAddress != address(0), "Pool address not set");
-        require(paymentToken.transferFrom(msg.sender, poolAddress, price), "Transfer failed");
+        require(devWallet != address(0), "Dev wallet not set");
+        require(paymentToken.transferFrom(msg.sender, address(this), price), "Transfer failed");
         _mint(msg.sender);
     }
 
