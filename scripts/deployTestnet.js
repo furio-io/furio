@@ -16,9 +16,9 @@ async function main() {
     await presalenft.setDevWallet(deployer.address);
     await presalenft.unpause();
     // deploy token
-    Token = await ethers.getContractFactory("Token");
-    token = await Token.deploy();
-    console.log("Token deployed to", token.address);
+    //Token = await ethers.getContractFactory("Token");
+    //token = await Token.deploy();
+    //console.log("Token deployed to", token.address);
 }
 
 main()
