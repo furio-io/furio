@@ -8,9 +8,6 @@ describe("Treasury", function () {
         // deploy USDC
         USDC = await ethers.getContractFactory("MockUSDC");
         usdc = await USDC.deploy();
-        // deploy Token
-        Token = await ethers.getContractFactory("Token");
-        token = await Token.deploy();
         // deploy Treasury
         Treasury = await ethers.getContractFactory("Treasury");
         treasury = await Treasury.deploy();
