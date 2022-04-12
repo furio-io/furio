@@ -14,7 +14,7 @@ import "@openzeppelin/contracts/interfaces/IERC20.sol";
 contract Treasury {
     // Owners
     mapping(address => bool) owners;
-    uint256 public ownerCount = 1;
+    uint256 public ownerCount;
 
     // What percent of owners need to approve an action?
     uint256 public votePercent = 75;
@@ -32,7 +32,7 @@ contract Treasury {
     // Constructor
     constructor()
     {
-        owners[msg.sender] = true;
+        _addOwner(msg.sender);
     }
 
     /**
@@ -55,9 +55,7 @@ contract Treasury {
         bytes32 hash = keccak256(abi.encode("addOwner", owner_));
         _vote(hash);
         if(!_passes(hash)) return;
-        owners[owner_] = true;
-        ownerCount ++;
-        emit OwnerAdded(owner_);
+        _addOwner(owner_);
     }
 
     /**
@@ -70,9 +68,7 @@ contract Treasury {
         bytes32 hash = keccak256(abi.encode("removeOwner", owner_));
         _vote(hash);
         if(!_passes(hash)) return;
-        owners[owner_] = false;
-        ownerCount --;
-        emit OwnerRemoved(owner_);
+        _removeOwner(owner_);
     }
 
     /**
@@ -132,6 +128,29 @@ contract Treasury {
         if(_passes_) delete actions[hash_];
         emit VotePassed(hash_);
         return _passes_;
+    }
+
+    /**
+     * Add owner.
+     * @param owner_ Owner address.
+     */
+    function _addOwner(address owner_) internal
+    {
+        if(owners[owner_]) return;
+        owners[owner_] = true;
+        ownerCount ++;
+        emit OwnerAdded(owner_);
+    }
+
+    /**
+     * Remove owner.
+     * @param owner_ Owner address.
+     */
+    function _removeOwner(address owner_) internal
+    {
+        owners[owner_] = false;
+        ownerCount --;
+        emit OwnerRemoved(owner_);
     }
 
     // Owner modifier
