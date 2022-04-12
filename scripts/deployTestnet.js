@@ -7,18 +7,22 @@ async function main() {
     USDC = await ethers.getContractFactory("MockUSDC");
     usdc = await USDC.deploy();
     console.log("USDC deployed to", usdc.address);
-    await usdc.mint(deployer.address, "250000000000000000000");
+    await usdc.mint(deployer.address, "1000000000000");
+    // deploy treasury
+    Treasury = await ethers.getContractFactory("Treasury");
+    treasury = await Treasury.deploy();
+    console.log("Treasury deployed to", treasury.address);
+    // deploy token
+    Token = await ethers.getContractFactory("Token");
+    token = await Token.deploy();
+    console.log("Token deployed to", token.address);
     // deploy presale
-    PresaleNFT = await ethers.getContractFactory("PresaleNFT");
-    presalenft = await PresaleNFT.deploy();
+    PresaleNft = await ethers.getContractFactory("PresaleNft");
+    presalenft = await PresaleNft.deploy();
     console.log("Presale NFT deployed to", presalenft.address);
     await presalenft.setPaymentToken(usdc.address);
-    await presalenft.setDevWallet(deployer.address);
-    await presalenft.unpause();
-    // deploy token
-    //Token = await ethers.getContractFactory("Token");
-    //token = await Token.deploy();
-    //console.log("Token deployed to", token.address);
+    await presalenft.setTreasury(treasury.address);
+    await presalenft.setFurioToken(token.address);
 }
 
 main()

@@ -1,204 +1,160 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-// INTERFACES
-import "@openzeppelin/contracts/interfaces/IERC165.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/interfaces/IERC20.sol";
-import "@openzeppelin/contracts/interfaces/IERC721.sol";
-import "@openzeppelin/contracts/interfaces/IERC721Metadata.sol";
-import "./interfaces/IDownlineNFT.sol";
 import "./interfaces/IToken.sol";
 
-/**
- * @title Presale NFT
- * @author Steve Harmeyer
- * @notice This is the presale NFT contract. Anyone holding one of these NFTs
- * can exchange them for 500 FUR tokens + 2 downline NFTs.
- */
-contract PresaleNFT {
+contract PresaleNft is Ownable, ERC721
+{
     /**
-     * @dev Contract owner address.
+     * Token id tracker.
      */
-    address public owner;
+    uint256 private _tokenId;
 
     /**
-     * @dev Paused state.
-     */
-    bool public paused = true;
-
-    /**
-     * @dev Payment token.
+     * Payment token.
      */
     IERC20 public paymentToken;
 
     /**
-     * @dev $FUR token.
+     * Treasury.
      */
-    IToken public token;
+    address public treasury;
 
     /**
-     * @dev $FURNFT token.
+     * Furio token.
      */
-    IDownlineNFT public downlineNft;
+    IToken public furioToken;
 
     /**
-     * @dev Dev wallet address.
+     * Start times.
      */
-    address public devWallet;
+    uint256 public presaleOneStart = 1650398370; // Tue Apr 19 2022 19:59:30 GMT+0000
+    uint256 public presaleTwoStart = 1650743970; // Sat Apr 23 2022 19:59:30 GMT+0000
+    uint256 public presaleThreeStart = 1651089570; // Wed Apr 27 2022 19:59:30 GMT+0000
+    uint256 public claimStart = 1651435170; // Sun May 01 2022 19:59:30 GMT+0000
 
     /**
-     * @dev Array of addresses that can buy while paused.
+     * Max each address can hold.
      */
-    mapping(address => bool) private _presaleWallets;
+    uint256 public presaleOneMax = 1;
+    uint256 public presaleTwoMax = 10;
+    uint256 public presaleThreeMax = 10;
 
     /**
-     * @dev Stats.
+     * Purchase prices.
      */
-    uint256 public totalSupply;
-    uint256 public totalCreated;
-    uint256 public maxSupply = 300;
-    uint256 public maxPerUser = 1;
-    uint256 public price = 250e18;
-    uint256 public tokenValue = 500e18;
-    uint256 public nftValue = 2;
-    uint256 private _currentTokenId;
-    mapping(uint256 => bool) private _exists;
-    mapping(address => uint256) public balanceOf;
-    mapping(uint256 => address) public ownerOf;
-    mapping(uint256 => address) private _tokenApprovals;
-    mapping(address => mapping(address => bool)) private _operatorApprovals;
-    string public baseURI = 'ipfs://QmSZhsoYWeb9gCXAaGDe7vs9AVFPxr5nn2GWxicBKKouui/';
+    uint256 public presaleOnePrice = 250e6;
+    uint256 public presaleTwoPrice = 150e6;
+    uint256 public presaleThreePrice = 175e6;
 
     /**
-     * @dev Contract events.
+     * Max supplies.
      */
-    event Transfer(address indexed from_, address indexed to_, uint256 indexed tokenId_);
-    event Approval(address indexed owner_, address indexed approved_, uint256 indexed tokenId_);
-    event ApprovalForAll(address indexed owner_, address indexed operator_, bool approved_);
-    event Minted(address indexed to_, uint256 indexed tokenId_);
-    event Claimed(uint256 indexed tokenId_);
+    uint256 public presaleOneSupply = 300;
+    uint256 public presaleTwoSupply = 1250;
+    uint256 public presaleThreeSupply = 1250;
 
     /**
-     * @dev Contract constructor.
+     * Values.
      */
-    constructor()
-    {
-        owner = msg.sender;
+    uint256 public presaleOneValue = 500e18;
+    uint256 public presaleTwoValue = 100e18;
+    uint256 public presaleThreeValue = 100e18;
+
+    /**
+     * Purchased.
+     */
+    mapping(address => uint256) public presaleOnePurchased;
+    mapping(address => uint256) public presaleTwoPurchased;
+    mapping(address => uint256) public presaleThreePurchased;
+
+    /**
+     * Metadata.
+     */
+    string private _tokenUri = 'ipfs://Qme28bzD3z119fAqBPXgpDb9Z79bqEheQjkejWsefcd4Gj/1';
+
+    /**
+     * Events.
+     */
+    event TokensPurchased(address buyer_, uint256 quantity_);
+    event TokenClaimed(uint256 tokenId_);
+
+    /**
+     * Constructor.
+     */
+    constructor() ERC721 (
+        'Furio Presale NFT',
+        '$FURPRESALE'
+    ) {}
+
+    /**
+     * Token URI.
+     * @param tokenId_ Id of the token.
+     */
+    function tokenURI(uint256 tokenId_) public view override returns (string memory) {
+        require(_exists(tokenId_), "Token does not exist");
+        return _tokenUri;
     }
 
     /**
-     * -------------------------------------------------------------------------
-     * ERC721 STANDARDS
-     * -------------------------------------------------------------------------
+     * Buy an NFT.
+     * @param quantity_ The number of NFTs to purchase.
      */
-
-    /**
-     * @dev see {IERC721-name}.
-     */
-    function name() external pure returns (string memory)
+    function buy(uint256 quantity_) external
     {
-        return "Furio Presale NFT";
+        require(address(paymentToken) != address(0), "Payment token not set");
+        require(treasury != address(0), "Treasury not set");
+        uint256 _time_ = block.timestamp;
+        uint8 _type_ = 0;
+        if(_time_ > presaleOneStart) _type_ = 1;
+        if(_time_ > presaleTwoStart) _type_ = 2;
+        if(_time_ > presaleThreeStart) _type_ = 3;
+        require(_type_ > 0, "Presale has not started");
+        if(_type_ == 1) {
+            require(_tokenId + quantity_ <= presaleOneSupply, "Quantity is too high");
+            require(presaleOnePurchased[msg.sender] + quantity_ <= presaleOneMax, "Quantity is too high");
+            require(paymentToken.transferFrom(msg.sender, treasury, presaleOnePrice * quantity_), "Payment failed");
+            presaleOnePurchased[msg.sender] += quantity_;
+        }
+        if(_type_ == 2) {
+            if(_tokenId < presaleOneSupply) _tokenId = presaleOneSupply;
+            require(_tokenId + quantity_ <= presaleOneSupply + presaleTwoSupply, "Quantity is too high");
+            require(presaleTwoPurchased[msg.sender] + quantity_ <= presaleTwoMax, "Quantity is too high");
+            require(paymentToken.transferFrom(msg.sender, treasury, presaleTwoPrice * quantity_), "Payment failed");
+            presaleTwoPurchased[msg.sender] += quantity_;
+        }
+        if(_type_ == 3) {
+            if(_tokenId < presaleOneSupply + presaleTwoSupply) _tokenId = presaleOneSupply + presaleTwoSupply;
+            require(_tokenId + quantity_ <= presaleOneSupply + presaleTwoSupply + presaleThreeSupply, "Quantity is too high");
+            require(presaleThreePurchased[msg.sender] + quantity_ <= presaleThreeMax, "Quantity is too high");
+            require(paymentToken.transferFrom(msg.sender, treasury, presaleThreePrice * quantity_), "Payment failed");
+            presaleThreePurchased[msg.sender] += quantity_;
+        }
+        for(uint256 i = 1; i <= quantity_; i ++) {
+            _tokenId ++;
+            _mint(msg.sender, _tokenId);
+        }
+        emit TokensPurchased(msg.sender, quantity_);
     }
 
     /**
-     * @dev see {IERC721-symbol}.
+     * Claim.
+     * @param tokenId_ Token id to claim.
      */
-    function symbol() external pure returns (string memory)
+    function claim(uint256 tokenId_) external
     {
-        return "$FURPRESALE";
-    }
-
-    /**
-     * @dev see {IERC721-tokenURI}.
-     */
-    function tokenURI(uint256 tokenId_) external view returns (string memory)
-    {
-        require(_exists[tokenId_], "Token does not exist");
-        return string(abi.encodePacked(baseURI, tokenId_));
-    }
-
-    /**
-     * @dev see {IERC721-safeTransferFrom}.
-     */
-    function safeTransferFrom(address from_, address to_, uint256 tokenId_, bytes memory data_) public isNotPaused
-    {
-        require(to_ != address(0), "Cannot transfer to zero address");
-        address _owner_ = ownerOf[tokenId_];
-        require(msg.sender == _owner_ || msg.sender == getApproved(tokenId_) || isApprovedForAll(_owner_, msg.sender), "Unauthorized");
-        _tokenApprovals[tokenId_] = address(0);
-        emit Approval(_owner_, address(0), tokenId_);
-        balanceOf[from_] -= 1;
-        balanceOf[to_] += 1;
-        ownerOf[tokenId_] = to_;
-        emit Transfer(from_, to_, tokenId_);
-    }
-
-    /**
-     * @dev see {IERC721-safeTransferFrom}.
-     */
-    function safeTransferFrom(address from_, address to_, uint256 tokenId_) external isNotPaused
-    {
-        safeTransferFrom(from_, to_, tokenId_, "");
-    }
-
-    /**
-     * @dev see {IERC721-transferFrom}.
-     */
-    function transferFrom(address from_, address to_, uint256 tokenId_) external isNotPaused
-    {
-        safeTransferFrom(from_, to_, tokenId_, "");
-    }
-
-    /**
-     * @dev see {IERC721-approve}.
-     */
-    function approve(address approved_, uint256 tokenId_) public isNotPaused
-    {
-        address _owner_ = ownerOf[tokenId_];
-        require(approved_ != _owner_, "Cannot approve to current owner");
-        require(msg.sender == _owner_ || isApprovedForAll(_owner_, msg.sender), "Unauthorized");
-        _tokenApprovals[tokenId_] = approved_;
-        emit Approval(_owner_, approved_, tokenId_);
-    }
-
-    /**
-     * @dev see {IERC721-setApprovalForAll}.
-     */
-    function setApprovalForAll(address operator_, bool approved_) external isNotPaused
-    {
-        require(msg.sender != operator_, "Cannot approve to current owner");
-        _operatorApprovals[msg.sender][operator_] = approved_;
-        emit ApprovalForAll(msg.sender, operator_, approved_);
-    }
-
-    /**
-     * @dev see {IERC721-getApproved}.
-     */
-    function getApproved(uint256 tokenId_) public view returns (address)
-    {
-        require(_exists[tokenId_], "Token does not exist");
-        return _tokenApprovals[tokenId_];
-    }
-
-    /**
-     * @dev see {IERC721-isApprovedForAll}.
-     */
-    function isApprovedForAll(address owner_, address operator_) public view returns (bool)
-    {
-        return _operatorApprovals[owner_][operator_];
-    }
-
-    /**
-     * -------------------------------------------------------------------------
-     * ERC165 STANDARDS
-     * -------------------------------------------------------------------------
-     */
-    function supportsInterface(bytes4 interfaceId_) external pure returns (bool)
-    {
-        return
-            interfaceId_ == type(IERC165).interfaceId ||
-            interfaceId_ == type(IERC721).interfaceId ||
-            interfaceId_ == type(IERC721Metadata).interfaceId;
+        require(address(furioToken) != address(0), "Furio token not set");
+        require(_exists(tokenId_), "Token does not exist");
+        require(ownerOf(tokenId_) == msg.sender, "Token does not belong to you");
+        uint256 _amount_ = presaleThreeValue;
+        if(tokenId_ <= presaleOneSupply + presaleTwoSupply) _amount_ = presaleTwoValue;
+        if(tokenId_ <= presaleOneSupply) _amount_ = presaleOneValue;
+        furioToken.mint(msg.sender, _amount_);
+        _burn(tokenId_);
+        emit TokenClaimed(tokenId_);
     }
 
     /**
@@ -208,32 +164,8 @@ contract PresaleNFT {
      */
 
     /**
-     * Set contract owner.
-     * @param address_ The address of the owner wallet.
-     */
-    function setContractOwner(address address_) external onlyOwner
-    {
-        owner = address_;
-    }
-
-    /**
-     * @dev Pause contract.
-     */
-    function pause() external onlyOwner
-    {
-        paused = true;
-    }
-
-    /**
-     * @dev Unpause contract.
-     */
-    function unpause() external onlyOwner
-    {
-        paused = false;
-    }
-
-    /**
-     * @dev Set payment token.
+     * Set payment token.
+     * @param address_ Address of the payment token.
      */
     function setPaymentToken(address address_) external onlyOwner
     {
@@ -241,181 +173,164 @@ contract PresaleNFT {
     }
 
     /**
-     * @dev Set dev wallet.
+     * Set treasury.
+     * @param address_ Address of the treasury contract.
      */
-    function setDevWallet(address address_) external onlyOwner
+    function setTreasury(address address_) external onlyOwner
     {
-        devWallet = address_;
+        treasury = address_;
     }
 
     /**
-     * @dev Set $FUR token.
+     * Set Furio token.
+     * @param address_ Address of the Furio token contract.
      */
-    function setFurToken(address address_) external onlyOwner
+    function setFurioToken(address address_) external onlyOwner
     {
-        token = IToken(address_);
+        furioToken = IToken(address_);
     }
 
     /**
-     * @dev Set downline NFT.
+     * Set presale one start.
+     * @param start_ New start timestamp.
      */
-    function setDownlineNft(address address_) external onlyOwner
+    function setPresaleOneStart(uint256 start_) external onlyOwner
     {
-        downlineNft = IDownlineNFT(address_);
+        presaleOneStart = start_;
     }
 
     /**
-     * @dev Add a presale wallet.
+     * Set presale two start.
+     * @param start_ New start timestamp.
      */
-    function addPresaleWallet(address address_) external onlyOwner
+    function setPresaleTwoStart(uint256 start_) external onlyOwner
     {
-        _presaleWallets[address_] = true;
+        presaleTwoStart = start_;
     }
 
     /**
-     * @dev Set max supply.
+     * Set presale three start.
+     * @param start_ New start timestamp.
      */
-    function setMaxSupply(uint256 supply_) external onlyOwner
+    function setPresaleThreeStart(uint256 start_) external onlyOwner
     {
-        maxSupply = supply_;
+        presaleThreeStart = start_;
     }
 
     /**
-     * @dev Set max per user.
+     * Set presale one max.
+     * @param max_ New max.
      */
-    function setMaxPerUser(uint256 max_) external onlyOwner
+    function setPresaleOneMax(uint256 max_) external onlyOwner
     {
-        maxPerUser = max_;
+        presaleOneMax = max_;
     }
 
     /**
-     * @dev Set price.
+     * Set presale two max.
+     * @param max_ New max.
      */
-    function setPrice(uint256 price_) external onlyOwner
+    function setPresaleTwoMax(uint256 max_) external onlyOwner
     {
-        price = price_;
+        presaleTwoMax = max_;
     }
 
     /**
-     * @dev Set token value.
+     * Set presale three max.
+     * @param max_ New max.
      */
-    function setTokenValue(uint256 value_) external onlyOwner
+    function setPresaleThreeMax(uint256 max_) external onlyOwner
     {
-        tokenValue = value_;
+        presaleThreeMax = max_;
     }
 
     /**
-     * @dev Set NFT value.
+     * Set presale one price.
+     * @param price_ New price.
      */
-    function setNftValue(uint256 value_) external onlyOwner
+    function setPresaleOnePrice(uint256 price_) external onlyOwner
     {
-        nftValue = value_;
+        presaleOnePrice = price_;
     }
 
     /**
-     * @dev Set base URI.
+     * Set presale two price.
+     * @param price_ New price.
      */
-    function setBaseURI(string memory baseURI_) external onlyOwner
+    function setPresaleTwoPrice(uint256 price_) external onlyOwner
     {
-        baseURI = baseURI_;
+        presaleTwoPrice = price_;
     }
 
     /**
-     * @dev Mint an NFT.
+     * Set presale three price.
+     * @param price_ New price.
      */
-    function mint(address to_) external onlyOwner
+    function setPresaleThreePrice(uint256 price_) external onlyOwner
     {
-        _mint(to_);
+        presaleThreePrice = price_;
     }
 
     /**
-     * -------------------------------------------------------------------------
-     * USER FUNCTIONS
-     * -------------------------------------------------------------------------
+     * Set presale one supply.
+     * @param supply_ New supply.
      */
-
-    /**
-     * @dev Buy an NFT.
-     */
-    function buy() external
+    function setPresaleOneSupply(uint256 supply_) external onlyOwner
     {
-        require(!paused || _presaleWallets[msg.sender], "Sale is not open");
-        require(address(paymentToken) != address(0), "Payment token not set");
-        require(devWallet != address(0), "Dev wallet not set");
-        require(paymentToken.transferFrom(msg.sender, address(this), price), "Transfer failed");
-        _mint(msg.sender);
+        presaleOneSupply = supply_;
     }
 
     /**
-     * @dev Claim an NFT.
+     * Set presale two supply.
+     * @param supply_ New supply.
      */
-    function claim() external
+    function setPresaleTwoSupply(uint256 supply_) external onlyOwner
     {
-        require(balanceOf[msg.sender] > 0, "No NFTs owned");
-        require(address(token) != address(0), "$FUR token not set");
-        require(address(downlineNft) != address(0), "NFT token not set");
-        require(!token.paused(), "$FUR token is paused");
-        require(!downlineNft.paused(), "$FURNFT token is paused");
-        token.mint(msg.sender, tokenValue);
-        downlineNft.mint(msg.sender, nftValue);
-        uint256 _tokenId_ = 0;
-        for(uint256 i = 1; i <= totalSupply; i++) {
-            if(ownerOf[i] == msg.sender) {
-                _tokenId_ = i;
-                break;
-            }
-        }
-        balanceOf[msg.sender] -= 1;
-        delete _tokenApprovals[_tokenId_];
-        delete ownerOf[_tokenId_];
-        delete _exists[_tokenId_];
-        totalSupply --;
-        emit Transfer(msg.sender, address(0), _tokenId_);
-        emit Claimed(_tokenId_);
+        presaleTwoSupply = supply_;
     }
 
     /**
-     * -------------------------------------------------------------------------
-     * INTERNAL FUNCTIONS
-     * -------------------------------------------------------------------------
+     * Set presale three supply.
+     * @param supply_ New supply.
      */
-
-    function _mint(address to_) internal
+    function setPresaleThreeSupply(uint256 supply_) external onlyOwner
     {
-        require(totalCreated < maxSupply, "Out of supply");
-        require(balanceOf[to_] < maxPerUser, "User has max");
-        _currentTokenId ++;
-        totalSupply ++;
-        totalCreated ++;
-        balanceOf[to_] += 1;
-        ownerOf[_currentTokenId] = to_;
-        _exists[_currentTokenId] = true;
-        emit Transfer(address(0), to_, _currentTokenId);
-        emit Minted(to_, _currentTokenId);
+        presaleThreeSupply = supply_;
     }
 
     /**
-     * -------------------------------------------------------------------------
-     * MODIFIERS
-     * -------------------------------------------------------------------------
+     * Set presale one value.
+     * @param value_ New value.
      */
-
-    /**
-     * @dev Requires caller to be owner. These are methods that will be
-     * called by a trusted user.
-     */
-    modifier onlyOwner()
+    function setPresaleOneValue(uint256 value_) external onlyOwner
     {
-        require(msg.sender == owner, "Unauthorized");
-        _;
+        presaleOneValue = value_;
     }
 
     /**
-     * @dev Requires the contract to not be paused.
+     * Set presale two value.
+     * @param value_ New value.
      */
-    modifier isNotPaused()
+    function setPresaleTwoValue(uint256 value_) external onlyOwner
     {
-        require(!paused, "Contract is paused");
-        _;
+        presaleTwoValue = value_;
+    }
+
+    /**
+     * Set presale three value.
+     * @param value_ New value.
+     */
+    function setPresaleThreeValue(uint256 value_) external onlyOwner
+    {
+        presaleThreeValue = value_;
+    }
+
+    /**
+     * Set token URI.
+     * @param uri_ New URI.
+     */
+    function setPresaleThreeValue(string memory uri_) external onlyOwner
+    {
+        _tokenUri = uri_;
     }
 }
