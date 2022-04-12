@@ -81,19 +81,31 @@ describe("Treasury", function () {
     it("Transfers", async function () {
         // mint to treasury and transfer to owner
         await expect(usdc.mint(treasury.address, '1000000')).to.not.be.reverted;
+        // Treasury balance is correct
         expect(await usdc.balanceOf(treasury.address)).to.equal('1000000');
+        // Should be able to transfer since there is only 1 owner... i.e. 100% vote
         await expect(treasury.transfer(usdc.address, owner.address, '1000000')).to.emit(treasury, "Transfer");
+        // Now owner has balance and treasury does not
         expect(await usdc.balanceOf(owner.address)).to.equal('1000000');
+        expect(await usdc.balanceOf(treasury.address)).to.equal('0');
         // add an owner then require vote to transfer
         await expect(treasury.addOwner(addr1.address)).to.not.be.reverted;
         await expect(usdc.mint(treasury.address, '1000000')).to.not.be.reverted;
+        // treasury has balance again
         expect(await usdc.balanceOf(treasury.address)).to.equal('1000000');
+        // owner has previous balance of 1000000
         expect(await usdc.balanceOf(owner.address)).to.equal('1000000');
+        // vote to transfer... should not actually transfer because this is only 50% of votes
         await expect(treasury.transfer(usdc.address, owner.address, '1000000')).to.not.be.reverted;
+        // treasury balance is the same
         expect(await usdc.balanceOf(treasury.address)).to.equal('1000000');
+        // owner balance is the same
         expect(await usdc.balanceOf(owner.address)).to.equal('1000000');
+        // 2nd vote gets us over 75% so this should emit
         await expect(treasury.connect(addr1).transfer(usdc.address, owner.address, '1000000')).to.emit(treasury, "Transfer");
+        // treasury balance should now be 0
         expect(await usdc.balanceOf(treasury.address)).to.equal('0');
+        // owner balance should now be 2000000
         expect(await usdc.balanceOf(owner.address)).to.equal('2000000');
     });
 });
