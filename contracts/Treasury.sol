@@ -120,7 +120,7 @@ contract Treasury {
      */
     function _passes(bytes32 hash_) internal returns (bool)
     {
-        bool _passes_ = actions[hash_].length / ownerCount * 100 >= votePercent;
+        bool _passes_ = actions[hash_].length * 100 / ownerCount >= votePercent;
         if(_passes_) delete actions[hash_];
         emit VotePassed(hash_);
         return _passes_;

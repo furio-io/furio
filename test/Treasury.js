@@ -6,7 +6,7 @@ describe("Treasury", function () {
     beforeEach(async function () {
         [owner, addr1, addr2, addr3, ...addrs] = await ethers.getSigners();
         // deploy USDC
-        USDC = await ethers.getContractFactory("Treasury");
+        USDC = await ethers.getContractFactory("MockUSDC");
         usdc = await USDC.deploy();
         // deploy Token
         Token = await ethers.getContractFactory("Token");
@@ -22,7 +22,7 @@ describe("Treasury", function () {
         // addr1 should not be owner
         expect(await treasury.isOwner(addr1.address)).to.equal(false);
         // owner should be able to add addr1 as an owner
-        await expect(treasury.addOwner(addr1.address)).to.not.be.reverted;
+        await expect(treasury.addOwner(addr1.address)).to.emit(treasury, "VotePassed");
         expect(await treasury.isOwner(addr1.address)).to.equal(true);
         // addr2 should NOT be able to add an owner
         await expect(treasury.connect(addr2).addOwner(addr2.address)).to.be.revertedWith("Unauthorized");
@@ -48,7 +48,7 @@ describe("Treasury", function () {
         await expect(treasury.connect(addr1).addOwner(addr3.address)).to.be.revertedWith("Already voted");
         expect(await treasury.isOwner(addr3.address)).to.equal(false);
         // FINALLY, addr2 can also vote for addr3 making him an owner
-        await expect(treasury.connect(addr2).addOwner(addr3.address)).to.not.be.reverted;
+        await expect(treasury.connect(addr2).addOwner(addr3.address)).to.emit(treasury, "OwnerAdded");
         expect(await treasury.isOwner(addr3.address)).to.equal(true);
         // owner can vote to remove addr1
         await expect(treasury.removeOwner(addr1.address)).to.not.be.reverted;
@@ -59,8 +59,44 @@ describe("Treasury", function () {
         // addr1 should still be an owner until 75% consensus is reached
         expect(await treasury.isOwner(addr1.address)).to.equal(true);
         // addr3 can vote to remove addr1
-        await expect(treasury.connect(addr3).removeOwner(addr1.address)).to.not.be.reverted;
+        await expect(treasury.connect(addr3).removeOwner(addr1.address)).to.emit(treasury, "OwnerRemoved");
         // addr1 should no longer be an owner
+        expect(await treasury.ownerCount()).to.equal(3);
         expect(await treasury.isOwner(addr1.address)).to.equal(false);
+    });
+    it("Vote Percentage", async function () {
+        // default value should be 75%
+        expect(await treasury.votePercent()).to.equal(75);
+        await expect(treasury.setVotePercent(50)).to.emit(treasury, "VotePassed");
+        expect(await treasury.votePercent()).to.equal(50);
+        await expect(treasury.setVotePercent(75)).to.emit(treasury, "VotePercentUpdated");
+        // Make sure 75 is actually required
+        expect(await treasury.addOwner(addr1.address)).to.emit(treasury, "OwnerAdded");
+        // Now you need 2 votes to get >= 75%
+        await expect(treasury.setVotePercent(50)).to.not.be.reverted;
+        expect(await treasury.votePercent()).to.equal(75);
+        await expect(treasury.connect(addr1).setVotePercent(50)).to.emit(treasury, "VotePassed");
+        expect(await treasury.votePercent()).to.equal(50);
+        // only 50% required so 1 vote should work
+        await expect(treasury.setVotePercent(75)).to.emit(treasury, "VotePercentUpdated");
+        expect(await treasury.votePercent()).to.equal(75);
+    });
+    it("Transfers", async function () {
+        // mint to treasury and transfer to owner
+        await expect(usdc.mint(treasury.address, '1000000')).to.not.be.reverted;
+        expect(await usdc.balanceOf(treasury.address)).to.equal('1000000');
+        await expect(treasury.transfer(usdc.address, owner.address, '1000000')).to.emit(treasury, "Transfer");
+        expect(await usdc.balanceOf(owner.address)).to.equal('1000000');
+        // add an owner then require vote to transfer
+        await expect(treasury.addOwner(addr1.address)).to.not.be.reverted;
+        await expect(usdc.mint(treasury.address, '1000000')).to.not.be.reverted;
+        expect(await usdc.balanceOf(treasury.address)).to.equal('1000000');
+        expect(await usdc.balanceOf(owner.address)).to.equal('1000000');
+        await expect(treasury.transfer(usdc.address, owner.address, '1000000')).to.not.be.reverted;
+        expect(await usdc.balanceOf(treasury.address)).to.equal('1000000');
+        expect(await usdc.balanceOf(owner.address)).to.equal('1000000');
+        await expect(treasury.connect(addr1).transfer(usdc.address, owner.address, '1000000')).to.emit(treasury, "Transfer");
+        expect(await usdc.balanceOf(treasury.address)).to.equal('0');
+        expect(await usdc.balanceOf(owner.address)).to.equal('2000000');
     });
 });
