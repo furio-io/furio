@@ -84,8 +84,7 @@ contract Treasury {
         bytes32 hash = keccak256(abi.encode("transfer", token_, to_, amount_));
         _vote(hash);
         if(!_passes(hash)) return;
-        _token_.transfer(to_, amount_);
-        emit Transfer(token_, to_, amount_);
+        _transfer(_token_, to_, amount_);
     }
 
     /**
@@ -97,8 +96,7 @@ contract Treasury {
         bytes32 hash = keccak256(abi.encode("setVotePercent", percent_));
         _vote(hash);
         if(!_passes(hash)) return;
-        votePercent = percent_;
-        emit VotePercentUpdated(percent_);
+        _setVotePercent(percent_);
     }
 
     /**
@@ -151,6 +149,29 @@ contract Treasury {
         owners[owner_] = false;
         ownerCount --;
         emit OwnerRemoved(owner_);
+    }
+
+    /**
+     * Transfer.
+     * @param token_ Token contract.
+     * @param to_ Recipient address.
+     * @param amount_ Amount to send.
+     */
+    function _transfer(IERC20 token_, address to_, uint256 amount_) internal
+    {
+        token_.transfer(to_, amount_);
+        emit Transfer(address(token_), to_, amount_);
+
+    }
+
+    /**
+     * Set vote percent.
+     * @param percent_ New percent.
+     */
+    function _setVotePercent(uint256 percent_) internal
+    {
+        votePercent = percent_;
+        emit VotePercentUpdated(percent_);
     }
 
     // Owner modifier
