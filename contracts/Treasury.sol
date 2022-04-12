@@ -3,6 +3,14 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/interfaces/IERC20.sol";
 
+/**
+ * @title Treasury
+ * @author Steve Harmeyer
+ * @notice This is the treasury contract. This allows us to send funds (both
+ * dev allocations and presale USDT) to a central contract from where we can
+ * fund a liquidity pool, etc. This is basically a multisig wallet requiring
+ * multiple people from the dev team to approve actions.
+ */
 contract Treasury {
     // Owners
     mapping(address => bool) owners;
