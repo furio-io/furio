@@ -1,17 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/presets/ERC721PresetMinterPauserAutoId.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+
+// INTERFACES
 import "@openzeppelin/contracts/interfaces/IERC20.sol";
 import "./interfaces/IToken.sol";
 
-contract PresaleNft is Ownable, ERC721
+contract PresaleNft is ERC721PresetMinterPauserAutoId
 {
+    using Counters for Counters.Counter;
     /**
      * Token id tracker.
      */
-    uint256 private _tokenId;
+    Counters.Counter private _tokenIdTracker;
 
     /**
      * Payment token.
@@ -27,6 +30,17 @@ contract PresaleNft is Ownable, ERC721
      * Furio token.
      */
     IToken public furioToken;
+
+    /**
+     * Mode types.
+     */
+    enum Mode {
+        notStarted,
+        presaleOne,
+        presaleTwo,
+        presaleThree,
+        claim
+    }
 
     /**
      * Start times.
@@ -72,9 +86,23 @@ contract PresaleNft is Ownable, ERC721
     mapping(address => uint256) public presaleThreePurchased;
 
     /**
+     * Sold.
+     */
+    uint256 presaleOneSold;
+    uint256 presaleTwoSold;
+    uint256 presaleThreeSold;
+
+    /**
+     * Claimed.
+     */
+    uint256 totalClaimed;
+    mapping(uint256 => bool) public claimed;
+
+    /**
      * Metadata.
      */
     string private _tokenUri = 'ipfs://Qme28bzD3z119fAqBPXgpDb9Z79bqEheQjkejWsefcd4Gj/1';
+    address public owner;
 
     /**
      * Events.
@@ -85,18 +113,108 @@ contract PresaleNft is Ownable, ERC721
     /**
      * Constructor.
      */
-    constructor() ERC721 (
+    constructor() ERC721PresetMinterPauserAutoId (
         'Furio Presale NFT',
-        '$FURPRESALE'
-    ) {}
+        '$FURPRESALE',
+        _tokenUri
+    ) {
+        owner = msg.sender;
+    }
 
     /**
      * Token URI.
      * @param tokenId_ Id of the token.
      */
-    function tokenURI(uint256 tokenId_) public view override returns (string memory) {
+    function tokenURI(uint256 tokenId_) public view override returns (string memory)
+    {
         require(_exists(tokenId_), "Token does not exist");
         return _tokenUri;
+    }
+
+    /**
+     * Mode.
+     * @return uint8
+     * @dev Returns the mode of the contract based on time and supply.
+     */
+    function mode() public view returns (Mode)
+    {
+        uint256 _time_ = block.timestamp;
+        if(_time_ >= claimStart) return Mode.claim;
+        if(_time_ >= presaleThreeStart) return Mode.presaleThree;
+        if(_time_ >= presaleTwoStart) return Mode.presaleTwo;
+        if(_time_ >= presaleOneStart) return Mode.presaleOne;
+        return Mode.notStarted;
+    }
+
+    /**
+     * Max avialable.
+     * @return uint256
+     * @dev Figures out how many NFTs an address can purchase.
+     */
+    function max() public view returns (uint256)
+    {
+        Mode _mode_ = mode();
+        if(_mode_ == Mode.presaleOne) return presaleOneMax - presaleOnePurchased[msg.sender];
+        if(_mode_ == Mode.presaleTwo) return presaleTwoMax - presaleTwoPurchased[msg.sender];
+        if(_mode_ == Mode.presaleThree) return presaleThreeMax - presaleThreePurchased[msg.sender];
+        return 0;
+    }
+
+    /**
+     * Price.
+     * @return uint256
+     * @dev Figures out price based on presale level.
+     */
+    function price() public view returns (uint256)
+    {
+        Mode _mode_ = mode();
+        if(_mode_ == Mode.presaleOne) return presaleOnePrice;
+        if(_mode_ == Mode.presaleTwo) return presaleTwoPrice;
+        if(_mode_ == Mode.presaleThree) return presaleThreePrice;
+        return 0;
+    }
+
+    /**
+     * Supply.
+     * @return uint256
+     * @dev Figures out supply based on presale level.
+     */
+    function supply() public view returns (uint256)
+    {
+        Mode _mode_ = mode();
+        if(_mode_ == Mode.presaleOne) return presaleOneSupply - presaleOneSold;
+        if(_mode_ == Mode.presaleTwo) return presaleTwoSupply - presaleTwoSold;
+        if(_mode_ == Mode.presaleThree) return presaleThreeSupply - presaleThreeSold;
+        return 0;
+    }
+
+    /**
+     * Value.
+     * @return uint256
+     * @dev Figures out value based on presale level.
+     */
+    function value() public view returns (uint256)
+    {
+        Mode _mode_ = mode();
+        if(_mode_ == Mode.presaleOne) return presaleOneValue;
+        if(_mode_ == Mode.presaleTwo) return presaleTwoValue;
+        if(_mode_ == Mode.presaleThree) return presaleThreeValue;
+        return 0;
+    }
+
+    /**
+     * Token value.
+     * @return uint256
+     * @dev Figures out value based on token id.
+     */
+    function tokenValue(uint256 tokenId_) public view returns (uint256)
+    {
+        if(claimed[tokenId_]) return 0;
+        if(!_exists(tokenId_)) return 0;
+        uint256 _value_ = presaleThreeValue;
+        if(tokenId_ <= presaleOneSupply + presaleTwoSupply) _value_ = presaleTwoValue;
+        if(tokenId_ <= presaleOneSupply) _value_ = presaleOneValue;
+        return _value_;
     }
 
     /**
@@ -105,37 +223,35 @@ contract PresaleNft is Ownable, ERC721
      */
     function buy(uint256 quantity_) external
     {
+        Mode _mode_ = mode();
+        require(_mode_ != Mode.notStarted, "Presale has not started");
+        require(_mode_ != Mode.claim, "Presale has ended");
         require(address(paymentToken) != address(0), "Payment token not set");
         require(treasury != address(0), "Treasury not set");
-        uint256 _time_ = block.timestamp;
-        uint8 _type_ = 0;
-        if(_time_ > presaleOneStart) _type_ = 1;
-        if(_time_ > presaleTwoStart) _type_ = 2;
-        if(_time_ > presaleThreeStart) _type_ = 3;
-        require(_type_ > 0, "Presale has not started");
-        if(_type_ == 1) {
-            require(_tokenId + quantity_ <= presaleOneSupply, "Quantity is too high");
-            require(presaleOnePurchased[msg.sender] + quantity_ <= presaleOneMax, "Quantity is too high");
-            require(paymentToken.transferFrom(msg.sender, treasury, presaleOnePrice * quantity_), "Payment failed");
+        require(supply() >= quantity_, "Quantity is too high");
+        require(max() >= quantity_, "Quantity is too high");
+        require(paymentToken.transferFrom(msg.sender, treasury, price() * quantity_), "Payment failed");
+        if(_mode_ == Mode.presaleOne) {
             presaleOnePurchased[msg.sender] += quantity_;
+            presaleOneSold += quantity_;
         }
-        if(_type_ == 2) {
-            if(_tokenId < presaleOneSupply) _tokenId = presaleOneSupply;
-            require(_tokenId + quantity_ <= presaleOneSupply + presaleTwoSupply, "Quantity is too high");
-            require(presaleTwoPurchased[msg.sender] + quantity_ <= presaleTwoMax, "Quantity is too high");
-            require(paymentToken.transferFrom(msg.sender, treasury, presaleTwoPrice * quantity_), "Payment failed");
+        if(_mode_ == Mode.presaleTwo) {
+            while(_tokenIdTracker.current() < presaleOneSupply) {
+                _tokenIdTracker.increment();
+            }
             presaleTwoPurchased[msg.sender] += quantity_;
+            presaleTwoSold += quantity_;
         }
-        if(_type_ == 3) {
-            if(_tokenId < presaleOneSupply + presaleTwoSupply) _tokenId = presaleOneSupply + presaleTwoSupply;
-            require(_tokenId + quantity_ <= presaleOneSupply + presaleTwoSupply + presaleThreeSupply, "Quantity is too high");
-            require(presaleThreePurchased[msg.sender] + quantity_ <= presaleThreeMax, "Quantity is too high");
-            require(paymentToken.transferFrom(msg.sender, treasury, presaleThreePrice * quantity_), "Payment failed");
+        if(_mode_ == Mode.presaleThree) {
+            while(_tokenIdTracker.current() < presaleOneSupply + presaleTwoSupply) {
+                _tokenIdTracker.increment();
+            }
             presaleThreePurchased[msg.sender] += quantity_;
+            presaleThreeSold += quantity_;
         }
         for(uint256 i = 1; i <= quantity_; i ++) {
-            _tokenId ++;
-            _mint(msg.sender, _tokenId);
+            _tokenIdTracker.increment();
+            _mint(msg.sender, _tokenIdTracker.current());
         }
         emit TokensPurchased(msg.sender, quantity_);
     }
@@ -147,13 +263,11 @@ contract PresaleNft is Ownable, ERC721
     function claim(uint256 tokenId_) external
     {
         require(address(furioToken) != address(0), "Furio token not set");
-        require(_exists(tokenId_), "Token does not exist");
         require(ownerOf(tokenId_) == msg.sender, "Token does not belong to you");
-        uint256 _amount_ = presaleThreeValue;
-        if(tokenId_ <= presaleOneSupply + presaleTwoSupply) _amount_ = presaleTwoValue;
-        if(tokenId_ <= presaleOneSupply) _amount_ = presaleOneValue;
-        furioToken.mint(msg.sender, _amount_);
+        require(mode() == Mode.claim, "Claim has not started");
+        furioToken.mint(msg.sender, tokenValue(tokenId_));
         _burn(tokenId_);
+        claimed[tokenId_] = true;
         emit TokenClaimed(tokenId_);
     }
 
@@ -215,6 +329,15 @@ contract PresaleNft is Ownable, ERC721
     function setPresaleThreeStart(uint256 start_) external onlyOwner
     {
         presaleThreeStart = start_;
+    }
+
+    /**
+     * Set claim start.
+     * @param start_ New start timestamp.
+     */
+    function setClaimStart(uint256 start_) external onlyOwner
+    {
+        claimStart = start_;
     }
 
     /**
@@ -329,8 +452,39 @@ contract PresaleNft is Ownable, ERC721
      * Set token URI.
      * @param uri_ New URI.
      */
-    function setPresaleThreeValue(string memory uri_) external onlyOwner
+    function setTokenUri(string memory uri_) external onlyOwner
     {
         _tokenUri = uri_;
+    }
+
+    /**
+     * Renounce ownership.
+     */
+    function renounceOwnership() external onlyOwner
+    {
+        owner = address(0);
+    }
+
+    /**
+     * Transfer ownership.
+     * @param owner_ New owner address.
+     */
+    function transferOwnership(address owner_) external onlyOwner
+    {
+        owner = owner_;
+    }
+
+    /**
+     * -------------------------------------------------------------------------
+     * MODIFIERS
+     * -------------------------------------------------------------------------
+     */
+
+    /**
+     * Require msg.sender to be owner.
+     */
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Unauthorized");
+        _;
     }
 }

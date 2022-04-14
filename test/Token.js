@@ -15,15 +15,15 @@ describe("Token", function () {
         expect(await token.owner()).to.equal(owner.address);
         expect(await token.decimals()).to.equal(18);
         expect(await token.devTax()).to.equal(0);
-        expect(await token.devWallet()).to.equal("0x0000000000000000000000000000000000000000");
-        expect(await token.downlineNFT()).to.equal("0x0000000000000000000000000000000000000000");
+        expect(await token.treasury()).to.equal("0x0000000000000000000000000000000000000000");
+        expect(await token.downlineNft()).to.equal("0x0000000000000000000000000000000000000000");
         expect(await token.liquidityTax()).to.equal(0);
         expect(await token.minted()).to.equal(0);
         expect(await token.name()).to.equal("Furio Token");
         expect(await token.paused()).to.equal(true);
         expect(await token.players()).to.equal(0);
         expect(await token.pool()).to.equal("0x0000000000000000000000000000000000000000");
-        expect(await token.presaleNFT()).to.equal("0x0000000000000000000000000000000000000000");
+        expect(await token.presaleNft()).to.equal("0x0000000000000000000000000000000000000000");
         expect(await token.symbol()).to.equal("$FUR");
         expect(await token.taxRate()).to.equal(10);
         expect(await token.totalSupply()).to.equal(0);
@@ -47,18 +47,18 @@ describe("Token", function () {
         expect(await token.paused()).to.equal(true);
     });
     it("Can set dev wallet", async function () {
-        await expect(token.setDevWallet(addr1.address)).to.not.be.reverted;
-        expect(await token.devWallet()).to.equal(addr1.address);
+        await expect(token.setTreasury(addr1.address)).to.not.be.reverted;
+        expect(await token.treasury()).to.equal(addr1.address);
     });
     it("Cannot set dev wallet by non admin account", async function () {
-        await expect(token.connect(addr1).setDevWallet(addr2.address)).to.be.revertedWith("Unauthorized");
+        await expect(token.connect(addr1).setTreasury(addr2.address)).to.be.revertedWith("Unauthorized");
     });
     it("Can set downline NFT", async function () {
-        await expect(token.setDownlineNFT(addr1.address)).to.not.be.reverted;
-        expect(await token.downlineNFT()).to.equal(addr1.address);
+        await expect(token.setDownlineNft(addr1.address)).to.not.be.reverted;
+        expect(await token.downlineNft()).to.equal(addr1.address);
     });
     it("Cannot set downline NFT by non admin account", async function () {
-        await expect(token.connect(addr1).setDownlineNFT(addr2.address)).to.be.revertedWith("Unauthorized");
+        await expect(token.connect(addr1).setDownlineNft(addr2.address)).to.be.revertedWith("Unauthorized");
     });
     it("Can set pool", async function () {
         await expect(token.setPool(addr1.address)).to.not.be.reverted;
@@ -68,11 +68,11 @@ describe("Token", function () {
         await expect(token.connect(addr1).setPool(addr2.address)).to.be.revertedWith("Unauthorized");
     });
     it("Can set presale NFT", async function () {
-        await expect(token.setPresaleNFT(addr1.address)).to.not.be.reverted;
-        expect(await token.presaleNFT()).to.equal(addr1.address);
+        await expect(token.setPresaleNft(addr1.address)).to.not.be.reverted;
+        expect(await token.presaleNft()).to.equal(addr1.address);
     });
     it("Cannot set presale NFT by non admin account", async function () {
-        await expect(token.connect(addr1).setPresaleNFT(addr2.address)).to.be.revertedWith("Unauthorized");
+        await expect(token.connect(addr1).setPresaleNft(addr2.address)).to.be.revertedWith("Unauthorized");
     });
     it("Can set vault", async function () {
         await expect(token.setVault(addr1.address)).to.not.be.reverted;
@@ -104,7 +104,7 @@ describe("Token", function () {
     });
     // MINTING
     it("Downline NFT can mint tokens", async function () {
-        await expect(token.setDownlineNFT(owner.address)).to.not.be.reverted;
+        await expect(token.setDownlineNft(owner.address)).to.not.be.reverted;
         await expect(token.mint(addr1.address, "10000000000000000")).to.not.be.reverted;
         expect(await token.balanceOf(addr1.address)).to.equal("10000000000000000");
     });
@@ -114,7 +114,7 @@ describe("Token", function () {
         expect(await token.balanceOf(addr1.address)).to.equal("10000000000000000");
     });
     it("Presale NFT can mint tokens", async function () {
-        await expect(token.setPresaleNFT(owner.address)).to.not.be.reverted;
+        await expect(token.setPresaleNft(owner.address)).to.not.be.reverted;
         await expect(token.mint(addr1.address, "10000000000000000")).to.not.be.reverted;
         expect(await token.balanceOf(addr1.address)).to.equal("10000000000000000");
     });
@@ -128,7 +128,7 @@ describe("Token", function () {
     });
     // BURNING
     it("Downline NFT can burn tokens", async function () {
-        await expect(token.setDownlineNFT(owner.address)).to.not.be.reverted;
+        await expect(token.setDownlineNft(owner.address)).to.not.be.reverted;
         await expect(token.mint(addr1.address, "10000000000000000")).to.not.be.reverted;
         await expect(token.burn(addr1.address, "5000000000000000")).to.not.be.reverted;
         expect(await token.balanceOf(addr1.address)).to.equal("5000000000000000");
@@ -142,7 +142,7 @@ describe("Token", function () {
         expect(await token.totalSupply()).to.equal("5000000000000000");
     });
     it("Presale NFT can burn tokens", async function () {
-        await expect(token.setPresaleNFT(owner.address)).to.not.be.reverted;
+        await expect(token.setPresaleNft(owner.address)).to.not.be.reverted;
         await expect(token.mint(addr1.address, "10000000000000000")).to.not.be.reverted;
         await expect(token.burn(addr1.address, "5000000000000000")).to.not.be.reverted;
         expect(await token.balanceOf(addr1.address)).to.equal("5000000000000000");
@@ -164,7 +164,7 @@ describe("Token", function () {
     });
     // PROTECTED TRANSFERS
     it("Downline NFT can transfer tokens", async function () {
-        await expect(token.setDownlineNFT(owner.address)).to.not.be.reverted;
+        await expect(token.setDownlineNft(owner.address)).to.not.be.reverted;
         await expect(token.mint(addr1.address, "10000000000000000")).to.not.be.reverted;
         expect(await token.balanceOf(addr1.address)).to.equal("10000000000000000");
         await expect(token.protectedTransfer(addr1.address, addr2.address, "5000000000000000", 0)).to.not.be.reverted;
@@ -182,7 +182,7 @@ describe("Token", function () {
         expect(await token.totalSupply()).to.equal("10000000000000000");
     });
     it("Presale NFT can transfer tokens", async function () {
-        await expect(token.setPresaleNFT(owner.address)).to.not.be.reverted;
+        await expect(token.setPresaleNft(owner.address)).to.not.be.reverted;
         await expect(token.mint(addr1.address, "10000000000000000")).to.not.be.reverted;
         expect(await token.balanceOf(addr1.address)).to.equal("10000000000000000");
         await expect(token.protectedTransfer(addr1.address, addr2.address, "5000000000000000", 0)).to.not.be.reverted;
@@ -246,7 +246,7 @@ describe("Token", function () {
         await expect(token.setDevTax(10)).to.not.be.reverted;
         expect(await token.taxRate()).to.equal(10);
         await expect(token.setVault(owner.address)).to.not.be.reverted;
-        await expect(token.setDevWallet(owner.address)).to.not.be.reverted;
+        await expect(token.setTreasury(owner.address)).to.not.be.reverted;
         await expect(token.mint(addr1.address, "100")).to.not.be.reverted;
         await expect(token.connect(addr1).transfer(addr2.address, "100")).to.not.be.reverted;
         expect(await token.balanceOf(addr2.address)).to.equal("90");
@@ -262,7 +262,7 @@ describe("Token", function () {
         expect(await token.taxRate()).to.equal(10);
         await expect(token.setPool(owner.address)).to.not.be.reverted;
         await expect(token.setVault(owner.address)).to.not.be.reverted;
-        await expect(token.setDevWallet(owner.address)).to.not.be.reverted;
+        await expect(token.setTreasury(owner.address)).to.not.be.reverted;
         await expect(token.mint(addr1.address, "1000")).to.not.be.reverted;
         await expect(token.connect(addr1).transfer(addr2.address, "1000")).to.not.be.reverted;
         expect(await token.balanceOf(addr2.address)).to.equal("900");

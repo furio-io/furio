@@ -16,7 +16,8 @@
             </div>
             <button @click="submitVerification" class="btn btn-lg btn-primary">Submit</button>
         </div>
-        <div v-show="store.state.address.attributes.email && store.state.address.attributes.email_verified_at">
+        <div v-show="store.state.address.attributes.email && store.state.address.attributes.email_verified_at && max.value">
+            <input v-model="max" type="number" class="form-control" id="max">
             <button @click="purchase" class="btn btn-lg btn-primary">Purchase</button>
         </div>
     </div>
@@ -33,14 +34,10 @@
             const verification = ref(null);
             const contract = ref(null);
             const paymentContract = ref(null);
-            const balance = ref(null);
-            const maxPerUser = ref(null);
-            const maxSupply = ref(null);
-            const nftValue = ref(null);
-            const paused = ref(null);
-            const price = ref(null);
-            const tokenValue = ref(null);
-            const totalCreated = ref(null);
+            const max = ref(0);
+            const supply = ref(0);
+            const value = ref(0);
+            const price = ref(0);
 
             const connected = computed(() => {
                 return store.state.connected;
@@ -57,7 +54,7 @@
                 if(!currentValue) {
                     return;
                 }
-                if(!maxPerUser.value) {
+                if(!max.value) {
                     getContractData();
                 }
             });
@@ -90,32 +87,31 @@
                 try {
                     contract.value = new web3.eth.Contract(JSON.parse(store.state.presaleNftAbi), store.state.presaleNftAddress);
                     paymentContract.value = new web3.eth.Contract(JSON.parse(store.state.usdcAbi), store.state.usdcAddress);
-                    balance.value = await contract.value.methods.balanceOf(store.state.account).call();
-                    maxPerUser.value = await contract.value.methods.maxPerUser().call();
-                    maxSupply.value = await contract.value.methods.maxSupply().call();
-                    nftValue.value = await contract.value.methods.nftValue().call();
-                    paused.value = await contract.value.methods.paused().call();
+                    max.value = await contract.value.methods.max().call();
+                    supply.value = await contract.value.methods.supply().call();
+                    value.value = await contract.value.methods.value().call();
                     price.value = await contract.value.methods.price().call();
-                    tokenValue.value = await contract.value.methods.tokenValue().call();
-                    totalCreated.value = await contract.value.methods.totalCreated().call();
                 } catch (error) {
                     store.commit("alert", error.message);
                 }
             }
 
             async function purchase() {
+                store.commit("notice", "Waiting on response from wallet");
                 try {
                     const gasPrice = Math.round(await web3.eth.getGasPrice());
-                    //let gas = Math.round(await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).estimateGas({ from: store.state.account, gasPrice: gasPrice }) * 2);
-                    //await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
-                    await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account, gasPrice: gasPrice });
-                    //gas = Math.round(await contract.value.methods.buy().estimateGas({ from: store.state.account, gasPrice: gasPrice}) * 2);
-                    //const result = await contract.value.methods.buy().send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
-                    const result = await contract.value.methods.buy().send({ from: store.state.account, gasPrice: gasPrice });
+                    let gas = Math.round(await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value * max.value).estimateGas({ from: store.state.account, gasPrice: gasPrice }) * 2);
+                    await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
+                    //await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account, gasPrice: gasPrice });
+                    gas = Math.round(await contract.value.methods.buy(max.value).estimateGas({ from: store.state.account, gasPrice: gasPrice}) * 2);
+                    const result = await contract.value.methods.buy(max.value).send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
+                    //const result = await contract.value.methods.buy().send({ from: store.state.account, gasPrice: gasPrice });
                     console.log(result);
                 } catch (error) {
                     store.commit("alert", error.message);
                 }
+                store.commit("notice", null);
+                getContractData();
             }
 
             return {
@@ -125,14 +121,10 @@
                 submitEmail,
                 submitVerification,
                 purchase,
-                balance,
-                maxPerUser,
-                maxSupply,
-                nftValue,
-                paused,
+                max,
+                supply,
+                value,
                 price,
-                tokenValue,
-                totalCreated,
             }
         }
 

@@ -1,29 +1,23 @@
 import { createRouter, createWebHistory } from "vue-router";
 
+import Home from "../views/Home.vue";
+import Presale from "../views/Presale.vue";
+import NotFound from "../views/NotFound.vue";
+
 const routes = [
     {
         path: "/",
         name: "Home",
-        component: () => import("../views/Home.vue"),
+        component: Home,
     },
     {
         path: "/presale",
         name: "Presale",
-        component: () => import("../views/Presale.vue"),
-    },
-    {
-        path: "/furswap",
-        name: "Furswap",
-        component: () => import("../views/Furswap.vue"),
-    },
-    {
-        path: "/vault",
-        name: "Vault",
-        component: () => import("../views/Vault.vue"),
+        component: Presale,
     },
     {
         path: "/:catchAll(.*)",
-        component: () => import("../views/NotFound.vue"),
+        component: NotFound,
     }
 ];
 

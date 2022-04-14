@@ -51,10 +51,10 @@ contract Token {
     /**
      * @dev Other contracts in the Furio ecosystem.
      */
-    address public devWallet;
-    address public downlineNFT;
+    address public treasury;
+    address public downlineNft;
     address public pool;
-    address public presaleNFT;
+    address public presaleNft;
     address public vault;
 
     /**
@@ -191,21 +191,21 @@ contract Token {
     }
 
     /**
-     * Set dev wallet.
-     * @param address_ The address of the dev wallet.
+     * Set treasury.
+     * @param address_ The address of the treasury wallet.
      */
-    function setDevWallet(address address_) external onlyOwner
+    function setTreasury(address address_) external onlyOwner
     {
-        devWallet = address_;
+        treasury = address_;
     }
 
     /**
      * Set downline nft.
      * @param address_ The address of the downline nft.
      */
-    function setDownlineNFT(address address_) external onlyOwner
+    function setDownlineNft(address address_) external onlyOwner
     {
-        downlineNFT = address_;
+        downlineNft = address_;
     }
 
     /**
@@ -221,9 +221,9 @@ contract Token {
      * Set presale NFT.
      * @param address_ The address of the presale NFT.
      */
-    function setPresaleNFT(address address_) external onlyOwner
+    function setPresaleNft(address address_) external onlyOwner
     {
-        presaleNFT = address_;
+        presaleNft = address_;
     }
 
     /**
@@ -363,9 +363,9 @@ contract Token {
                 emit TaxPayed(from_, address(vault), _vaultTax_);
             }
             if(_devTax_ > 0) {
-                _balances[address(devWallet)] += _devTax_;
-                emit Transfer(from_, address(devWallet), _devTax_);
-                emit TaxPayed(from_, address(devWallet), _devTax_);
+                _balances[address(treasury)] += _devTax_;
+                emit Transfer(from_, address(treasury), _devTax_);
+                emit TaxPayed(from_, address(treasury), _devTax_);
             }
             amount_ -= _tax_;
         }
@@ -411,9 +411,9 @@ contract Token {
     modifier trusted()
     {
         require(
-            msg.sender == address(downlineNFT) ||
+            msg.sender == address(downlineNft) ||
             msg.sender == address(pool) ||
-            msg.sender == address(presaleNFT) ||
+            msg.sender == address(presaleNft) ||
             msg.sender == address(vault),
             "Unauthorized"
         );

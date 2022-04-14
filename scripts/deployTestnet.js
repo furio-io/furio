@@ -23,6 +23,10 @@ async function main() {
     await presalenft.setPaymentToken(usdc.address);
     await presalenft.setTreasury(treasury.address);
     await presalenft.setFurioToken(token.address);
+    await presalenft.setPresaleOneStart(Math.floor(((Date.now() / 1000) + (60*10))));
+    await presalenft.setPresaleTwoStart(Math.floor(((Date.now() / 1000) + (60*20))));
+    await presalenft.setPresaleThreeStart(Math.floor(((Date.now() / 1000) + (60*30))));
+    await token.unpause();
 }
 
 main()
