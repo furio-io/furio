@@ -16,7 +16,7 @@
             </div>
             <button @click="submitVerification" class="btn btn-lg btn-primary">Submit</button>
         </div>
-        <div v-show="store.state.address.attributes.email && store.state.address.attributes.email_verified_at && max.value">
+        <div v-show="store.state.address.attributes.email && store.state.address.attributes.email_verified_at">
             <div v-show="max.value">
                 <input v-model="quantity" type="number" class="form-control" id="quantity">
                 <button @click="purchase" :disabled="locked" class="btn btn-lg btn-primary">Purchase</button>
@@ -44,7 +44,7 @@
             const supply = ref(0);
             const value = ref(0);
             const price = ref(0);
-            const locked = false;
+            const locked = ref(false);
 
             const connected = computed(() => {
                 return store.state.connected;
@@ -121,10 +121,8 @@
                     const gasPrice = Math.round(await web3.eth.getGasPrice());
                     let gas = Math.round(await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value * max.value).estimateGas({ from: store.state.account, gasPrice: gasPrice }) * 2);
                     await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
-                    //await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account, gasPrice: gasPrice });
                     gas = Math.round(await contract.value.methods.buy(max.value).estimateGas({ from: store.state.account, gasPrice: gasPrice}) * 2);
                     const result = await contract.value.methods.buy(max.value).send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
-                    //const result = await contract.value.methods.buy().send({ from: store.state.account, gasPrice: gasPrice });
                     console.log(result);
                 } catch (error) {
                     store.commit("alert", error.message);
@@ -147,6 +145,7 @@
                 value,
                 price,
                 totalPrice,
+                locked,
             }
         }
 
