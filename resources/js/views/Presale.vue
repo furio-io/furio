@@ -17,8 +17,13 @@
             <button @click="submitVerification" class="btn btn-lg btn-primary">Submit</button>
         </div>
         <div v-show="store.state.address.attributes.email && store.state.address.attributes.email_verified_at && max.value">
-            <input v-model="quantity" type="number" class="form-control" id="quantity">
-            <button @click="purchase" :disabled="locked" class="btn btn-lg btn-primary">Purchase</button>
+            <div v-show="max.value">
+                <input v-model="quantity" type="number" class="form-control" id="quantity">
+                <button @click="purchase" :disabled="locked" class="btn btn-lg btn-primary">Purchase</button>
+            </div>
+            <div v-show="!max.value">
+                No presales are currently available.
+            </div>
         </div>
     </div>
 </template>
