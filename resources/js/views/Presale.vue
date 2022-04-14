@@ -1,64 +1,105 @@
 <template>
     <h1>Presale</h1>
     <div class="row">
-        <div class="col-md-6 mb-2">
+        <div class="col-lg-6 mb-2">
             <div v-show="!store.state.connected">
                 <p>Connect your wallet to view the presale details.</p>
                 <button class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#connect">Connect Wallet</button>
             </div>
-            <div v-show="store.state.connected" class="row mb-3">
-                <div class="col-md-6 col-lg-4 mb-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title text-center">Remaining Supply</h6>
-                            <h5 class="card-text text-center">{{ supply }}</h5>
+            <div v-show="store.state.connected">
+                <div v-show="max == 0">
+                    <div v-show="countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0">
+                        <div class="row mb-3">
+                            <div>{{ nextEvent }} starts in...</div>
+                            <div class="col-sm-3">
+                                <div class="card text-white bg-secondary">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-center">Days</h6>
+                                        <h6 class="card-text text-center">{{ countdown.days }}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="card text-white bg-secondary">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-center">Hours</h6>
+                                        <h6 class="card-text text-center">{{ countdown.hours }}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="card text-white bg-secondary">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-center">Minutes</h6>
+                                        <h6 class="card-text text-center">{{ countdown.minutes }}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="card text-white bg-secondary">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-center">Seconds</h6>
+                                        <h6 class="card-text text-center">{{ countdown.seconds }}</h6>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-4 mb-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title text-center">Value Per NFT</h6>
-                            <h5 class="card-text text-center">{{ value / 1000000000000000000 }} $FUR</h5>
+                <div class="row mb-3">
+                    <div class="col-md-6 col-lg-4 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title text-center">Remaining Supply</h6>
+                                <h5 class="card-text text-center">{{ supply }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title text-center">Value Per NFT</h6>
+                                <h5 class="card-text text-center">{{ value / 1000000000000000000 }} $FUR</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title text-center">Price Per NFT</h6>
+                                <h5 class="card-text text-center">{{ price / 1000000 }} USDC</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title text-center">Max Available</h6>
+                                <h5 class="card-text text-center">{{ max }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title text-center">Owned Value</h6>
+                                <h5 class="card-text text-center">{{ ownedValue / 1000000000000000000 }} $FUR</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title text-center">Balance</h6>
+                                <h5 class="card-text text-center">{{ balance }}</h5>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-4 mb-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title text-center">Price Per NFT</h6>
-                            <h5 class="card-text text-center">{{ price / 1000000 }} USDC</h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4 mb-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title text-center">Max Available</h6>
-                            <h5 class="card-text text-center">{{ max }}</h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4 mb-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title text-center">Owned Value</h6>
-                            <h5 class="card-text text-center">{{ ownedValue / 1000000000000000000 }} $FUR</h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4 mb-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title text-center">Balance</h6>
-                            <h5 class="card-text text-center">{{ balance }}</h5>
-                        </div>
-                    </div>
-                </div>
+                <button v-show="store.state.connected" @click="getContractData" :disabled="locked" class="btn btn-sm btn-link col-12">Reload Contract Data</button>
             </div>
-            <button v-show="store.state.connected" @click="getContractData" :disabled="locked" class="btn btn-sm btn-link col-12">Reload Contract Data</button>
         </div>
-        <div class="col-md-6 mb-3">
+        <div class="col-lg-6 mb-3">
             <div v-show="store.state.connected">
                 <div v-show="!store.state.address.attributes.email">
                     <div class="mb-3">
@@ -80,43 +121,7 @@
                         <button @click="purchase" :disabled="locked" class="btn btn-lg btn-primary col-12">Purchase ({{ totalPrice / 1000000 }} USDC)</button>
                     </div>
                     <div v-show="max == 0">
-                        <div v-show="countdown.isRunning">
-                            <div class="row">
-                                <h3>{{ nextEvent }} starts in...</h3>
-                                <div class="col-sm-3">
-                                    <div class="card text-white bg-dark">
-                                        <div class="card-body">
-                                            <h6 class="card-title text-center">Days</h6>
-                                            <h6 class="card-text text-center">{{ countdown.days }}</h6>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-3">
-                                    <div class="card text-white bg-dark">
-                                        <div class="card-body">
-                                            <h6 class="card-title text-center">Hours</h6>
-                                            <h6 class="card-text text-center">{{ countdown.hours }}</h6>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-3">
-                                    <div class="card text-white bg-dark">
-                                        <div class="card-body">
-                                            <h6 class="card-title text-center">Minutes</h6>
-                                            <h6 class="card-text text-center">{{ countdown.minutes }}</h6>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-3">
-                                    <div class="card text-white bg-dark">
-                                        <div class="card-body">
-                                            <h6 class="card-title text-center">Seconds</h6>
-                                            <h6 class="card-text text-center">{{ countdown.seconds }}</h6>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        No presales are available at this time.
                     </div>
                 </div>
             </div>
