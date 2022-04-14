@@ -6,27 +6,51 @@
                 Connect your wallet to view the presale details.
             </div>
             <div v-show="store.state.connected" class="row">
-                <div class="col-4">
+                <div class="col-md-4 col-sm-6 mb-2">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title text-center">Max Available</h5>
-                            <h1 class="card-text text-center">{{ max }}</h1>
+                            <h6 class="card-title text-center">Total Supply</h6>
+                            <h3 class="card-text text-center">{{ supply }}</h3>
                         </div>
                     </div>
                 </div>
-                <div class="col-4">
+                <div class="col-md-4 col-sm-6 mb-2">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title text-center">Total Supply</h5>
-                            <h1 class="card-text text-center">{{ supply }}</h1>
+                            <h6 class="card-title text-center">Value</h6>
+                            <h3 class="card-text text-center">{{ value / 1000000000000000000 }} $FUR</h3>
                         </div>
                     </div>
                 </div>
-                <div class="col-4">
+                <div class="col-md-4 col-sm-6 mb-2">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title text-center">Balance</h5>
-                            <h1 class="card-text text-center">{{ balance }}</h1>
+                            <h6 class="card-title text-center">Price</h6>
+                            <h3 class="card-text text-center">{{ price / 1000000 }} USDC</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 mb-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title text-center">Balance</h6>
+                            <h3 class="card-text text-center">{{ balance }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 mb-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title text-center">Owned Value</h6>
+                            <h3 class="card-text text-center">{{ ownedValue / 1000000000000000000 }} $FUR</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 mb-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title text-center">Max Available</h6>
+                            <h3 class="card-text text-center">{{ max }}</h3>
                         </div>
                     </div>
                 </div>
