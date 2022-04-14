@@ -10,7 +10,7 @@
                 <div class="col-md-6 col-lg-4 mb-2">
                     <div class="card">
                         <div class="card-body">
-                            <h6 class="card-title text-center">Total Supply</h6>
+                            <h6 class="card-title text-center">Remaining Supply</h6>
                             <h5 class="card-text text-center">{{ supply }}</h5>
                         </div>
                     </div>
@@ -18,7 +18,7 @@
                 <div class="col-md-6 col-lg-4 mb-2">
                     <div class="card">
                         <div class="card-body">
-                            <h6 class="card-title text-center">Value</h6>
+                            <h6 class="card-title text-center">Value Per NFT</h6>
                             <h5 class="card-text text-center">{{ value / 1000000000000000000 }} $FUR</h5>
                         </div>
                     </div>
@@ -26,7 +26,7 @@
                 <div class="col-md-6 col-lg-4 mb-2">
                     <div class="card">
                         <div class="card-body">
-                            <h6 class="card-title text-center">Price</h6>
+                            <h6 class="card-title text-center">Price Per NFT</h6>
                             <h5 class="card-text text-center">{{ price / 1000000 }} USDC</h5>
                         </div>
                     </div>
@@ -117,7 +117,9 @@
             });
 
             onMounted(async function () {
-                //alert('hello');
+                if(store.state.account) {
+                    getContractData();
+                }
             });
 
             watch(connected, async function (currentValue, oldValue) {
