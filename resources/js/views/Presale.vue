@@ -9,38 +9,30 @@
             <div v-show="store.state.connected">
                 <div v-show="max == 0">
                     <div v-show="countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0">
-                        <div class="row mb-3">
-                            <div>{{ nextEvent }} starts in...</div>
-                            <div class="col-sm-3">
-                                <div class="card text-white bg-secondary">
-                                    <div class="card-body">
-                                        <h6 class="card-title text-center">Days</h6>
-                                        <h6 class="card-text text-center">{{ countdown.days }}</h6>
-                                    </div>
+                        <div>{{ nextEvent }} starts in...</div>
+                        <div class="card-group mb-3">
+                            <div class="card bg-light text-dark">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center">Days</h6>
+                                    <h6 class="card-text text-center">{{ countdown.days }}</h6>
                                 </div>
                             </div>
-                            <div class="col-sm-3">
-                                <div class="card text-white bg-secondary">
-                                    <div class="card-body">
-                                        <h6 class="card-title text-center">Hours</h6>
-                                        <h6 class="card-text text-center">{{ countdown.hours }}</h6>
-                                    </div>
+                            <div class="card bg-light text-dark">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center">Hours</h6>
+                                    <h6 class="card-text text-center">{{ countdown.hours }}</h6>
                                 </div>
                             </div>
-                            <div class="col-sm-3">
-                                <div class="card text-white bg-secondary">
-                                    <div class="card-body">
-                                        <h6 class="card-title text-center">Minutes</h6>
-                                        <h6 class="card-text text-center">{{ countdown.minutes }}</h6>
-                                    </div>
+                            <div class="card bg-light text-dark">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center">Minutes</h6>
+                                    <h6 class="card-text text-center">{{ countdown.minutes }}</h6>
                                 </div>
                             </div>
-                            <div class="col-sm-3">
-                                <div class="card text-white bg-secondary">
-                                    <div class="card-body">
-                                        <h6 class="card-title text-center">Seconds</h6>
-                                        <h6 class="card-text text-center">{{ countdown.seconds }}</h6>
-                                    </div>
+                            <div class="card bg-light text-dark">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center">Seconds</h6>
+                                    <h6 class="card-text text-center">{{ countdown.seconds }}</h6>
                                 </div>
                             </div>
                         </div>
