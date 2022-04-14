@@ -36,6 +36,7 @@
 <script>
     import { computed } from "vue";
     import { useStore } from "vuex";
+    import WalletConnectProvider from "@walletconnect/web3-provider";
 
     export default {
         setup() {
@@ -50,6 +51,10 @@
 
             async function metamask() {
                 store.commit("wallet", "metamask");
+                if (typeof window.ethereum == 'undefined') {
+                    window.location.href = 'https://metamask.app.link/dapp/' + location.hostname;
+                    return false;
+                }
                 try {
                     web3.setProvider(window.ethereum);
                     connect();
@@ -62,6 +67,12 @@
             async function walletconnect() {
                 store.commit("wallet", "walletconnect");
                 try {
+                    const provider = new WalletConnectProvider({
+                        rpc: {
+                            [store.state.networkId]: store.state.rpc,
+                        }
+                    });
+                    web3.setProvider(provider);
                     connect();
                 } catch (error) {
                     store.commit("alert", error.message);
