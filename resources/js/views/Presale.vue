@@ -182,14 +182,10 @@
                 }
             });
 
-            watch(countdown.isExpired, async function (currentValue, oldValue) {
-                if(oldValue) {
-                    return;
+            watch(countdown.seconds, async function (currentValue, oldValue) {
+                if(oldValue > 0 && countdown.days == 0 && countdown.hours == 0 && countdown.minutes == 0 && countdown.seconds == 0) {
+                    getContractData();
                 }
-                if(!currentValue) {
-                    return;
-                }
-                getContractData();
             });
 
             async function submitEmail() {
