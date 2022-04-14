@@ -148,15 +148,16 @@ contract PresaleNft is ERC721PresetMinterPauserAutoId
 
     /**
      * Max avialable.
+     * @param buyer_ Address buying the NFTs.
      * @return uint256
      * @dev Figures out how many NFTs an address can purchase.
      */
-    function max() public view returns (uint256)
+    function max(address buyer_) public view returns (uint256)
     {
         Mode _mode_ = mode();
-        if(_mode_ == Mode.presaleOne) return presaleOneMax - presaleOnePurchased[msg.sender];
-        if(_mode_ == Mode.presaleTwo) return presaleTwoMax - presaleTwoPurchased[msg.sender];
-        if(_mode_ == Mode.presaleThree) return presaleThreeMax - presaleThreePurchased[msg.sender];
+        if(_mode_ == Mode.presaleOne) return presaleOneMax - presaleOnePurchased[buyer_];
+        if(_mode_ == Mode.presaleTwo) return presaleTwoMax - presaleTwoPurchased[buyer_];
+        if(_mode_ == Mode.presaleThree) return presaleThreeMax - presaleThreePurchased[buyer_];
         return 0;
     }
 
@@ -218,6 +219,21 @@ contract PresaleNft is ERC721PresetMinterPauserAutoId
     }
 
     /**
+     * Owned value.
+     * @param owner_ Address of token owner.
+     * @return uint256
+     * @dev Returns total value of all owned NFTs.
+     */
+    function ownedValue(address owner_) public view returns (uint256)
+    {
+        uint256 _value_ = 0;
+        for(uint256 i = 0; i < balanceOf(owner_); i ++) {
+            _value_ += tokenValue(tokenOfOwnerByIndex(owner_, i));
+        }
+        return _value_;
+    }
+
+    /**
      * Buy an NFT.
      * @param quantity_ The number of NFTs to purchase.
      */
@@ -229,7 +245,7 @@ contract PresaleNft is ERC721PresetMinterPauserAutoId
         require(address(paymentToken) != address(0), "Payment token not set");
         require(treasury != address(0), "Treasury not set");
         require(supply() >= quantity_, "Quantity is too high");
-        require(max() >= quantity_, "Quantity is too high");
+        require(max(msg.sender) >= quantity_, "Quantity is too high");
         require(paymentToken.transferFrom(msg.sender, treasury, price() * quantity_), "Payment failed");
         if(_mode_ == Mode.presaleOne) {
             presaleOnePurchased[msg.sender] += quantity_;
@@ -258,17 +274,19 @@ contract PresaleNft is ERC721PresetMinterPauserAutoId
 
     /**
      * Claim.
-     * @param tokenId_ Token id to claim.
+     * @dev Claim all NFTs.
      */
-    function claim(uint256 tokenId_) external
+    function claim() external
     {
-        require(address(furioToken) != address(0), "Furio token not set");
-        require(ownerOf(tokenId_) == msg.sender, "Token does not belong to you");
         require(mode() == Mode.claim, "Claim has not started");
-        furioToken.mint(msg.sender, tokenValue(tokenId_));
-        _burn(tokenId_);
-        claimed[tokenId_] = true;
-        emit TokenClaimed(tokenId_);
+        furioToken.mint(msg.sender, ownedValue(msg.sender));
+        for(uint256 i = 0; i < balanceOf(msg.sender); i ++) {
+            uint256 _tokenId_ = tokenOfOwnerByIndex(msg.sender, i);
+            _burn(_tokenId_);
+            claimed[_tokenId_] = true;
+            totalClaimed ++;
+            emit TokenClaimed(_tokenId_);
+        }
     }
 
     /**

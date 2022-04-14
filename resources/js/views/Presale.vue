@@ -17,12 +17,12 @@
             <button @click="submitVerification" class="btn btn-lg btn-primary">Submit</button>
         </div>
         <div v-show="store.state.address.attributes.email && store.state.address.attributes.email_verified_at">
-            <div v-show="max">
+            <div v-show="max > 0">
                 <input v-show="max > 1" v-model="quantity" :disabled="locked" :max="max" min="1" type="number" class="form-control mb-2" id="quantity">
                 <input v-model="quantity" type="hidden">
                 <button @click="purchase" :disabled="locked" class="btn btn-lg btn-primary">Purchase ({{ totalPrice / 1000000 }} USDC)</button>
             </div>
-            <div v-show="!max">
+            <div v-show="max == 0">
                 No presales are currently available.
             </div>
         </div>
@@ -46,6 +46,8 @@
             const value = ref(0);
             const price = ref(0);
             const locked = ref(false);
+            const balance = ref(0);
+            const ownedValue = ref(0);
 
             const connected = computed(() => {
                 return store.state.connected;
@@ -104,11 +106,13 @@
                 try {
                     contract.value = new web3.eth.Contract(JSON.parse(store.state.presaleNftAbi), store.state.presaleNftAddress);
                     paymentContract.value = new web3.eth.Contract(JSON.parse(store.state.usdcAbi), store.state.usdcAddress);
-                    max.value = await contract.value.methods.max().call();
+                    max.value = await contract.value.methods.max(store.state.account).call();
                     quantity.value = max.value;
                     supply.value = await contract.value.methods.supply().call();
                     value.value = await contract.value.methods.value().call();
                     price.value = await contract.value.methods.price().call();
+                    balance.value = await contract.value.methods.balanceOf(store.state.account).call();
+                    ownedValue.value = await contract.value.methods.ownedValue(store.state.account).call();
                 } catch (error) {
                     store.commit("alert", error.message);
                 }
@@ -147,6 +151,8 @@
                 price,
                 totalPrice,
                 locked,
+                balance,
+                ownedValue,
             }
         }
 
