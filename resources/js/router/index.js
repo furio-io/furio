@@ -13,11 +13,6 @@ const routes = [
         component: Presale,
     },
     {
-        path: "/presale",
-        name: "Presale",
-        component: Presale,
-    },
-    {
         path: "/swap",
         name: "Swap",
         component: Swap,
