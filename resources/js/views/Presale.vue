@@ -1,12 +1,13 @@
 <template>
     <h1>Presale</h1>
     <div class="row">
-        <div class="col">
+        <div class="col-md-6 mb-2">
             <div v-show="!store.state.connected">
-                Connect your wallet to view the presale details.
+                <p>Connect your wallet to view the presale details.</p>
+                <button class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#connect">Connect Wallet</button>
             </div>
             <div v-show="store.state.connected" class="row mb-3">
-                <div class="col-md-4 col-sm-6 mb-2">
+                <div class="col-md-6 col-lg-4 mb-2">
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title text-center">Total Supply</h6>
@@ -14,7 +15,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 col-sm-6 mb-2">
+                <div class="col-md-6 col-lg-4 mb-2">
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title text-center">Value</h6>
@@ -22,7 +23,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 col-sm-6 mb-2">
+                <div class="col-md-6 col-lg-4 mb-2">
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title text-center">Price</h6>
@@ -30,7 +31,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 col-sm-6 mb-2">
+                <div class="col-md-6 col-lg-4 mb-2">
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title text-center">Max Available</h6>
@@ -38,7 +39,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 col-sm-6 mb-2">
+                <div class="col-md-6 col-lg-4 mb-2">
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title text-center">Owned Value</h6>
@@ -46,7 +47,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 col-sm-6 mb-2">
+                <div class="col-md-6 col-lg-4 mb-2">
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title text-center">Balance</h6>
@@ -55,10 +56,9 @@
                     </div>
                 </div>
             </div>
-            <button v-show="store.state.connected" @click="getContractData" :disabled="locked" class="btn btn-sm btn-primary col-12">Reload Contract Data</button>
+            <button v-show="store.state.connected" @click="getContractData" :disabled="locked" class="btn btn-sm btn-secondary col-12">Reload Contract Data</button>
         </div>
-        <div class="col">
-            <button v-show="!store.state.connected" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#connect">Connect Wallet</button>
+        <div class="col-md-6 mb-3">
             <div v-show="store.state.connected">
                 <div v-show="!store.state.address.attributes.email">
                     <div class="mb-3">
