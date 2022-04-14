@@ -156,7 +156,7 @@
             });
 
             onMounted(async function () {
-                if(store.state.account) {
+                if(store.state.connected) {
                     getContractData();
                 }
             });
