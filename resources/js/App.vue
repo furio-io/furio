@@ -12,6 +12,9 @@
                     <li class="nav-item">
                         <router-link :to="{ name: 'Presale' }" class="nav-link" active-class="active">Presale</router-link>
                     </li>
+                    <li class="nav-item">
+                        <router-link :to="{ name: 'MintUsdc' }" class="nav-link" active-class="active">Mint USDC</router-link>
+                    </li>
                 </ul>
                 <!-- END PRIMARY NAVIGATION -->
                 <div class="d-flex">

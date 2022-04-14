@@ -1,29 +1,63 @@
 <template>
     <h1>Presale</h1>
-    <button v-show="!store.state.connected" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#connect">Connect Wallet</button>
-    <div v-show="store.state.connected">
-        <div v-show="!store.state.address.attributes.email">
-            <div class="mb-3">
-                <label for="email" class="form-label">Enter your email address</label>
-                <input v-model="email" type="email" class="form-control" id="email">
+    <div class="row">
+        <div class="col">
+            <div v-show="!store.state.connected">
+                Connect your wallet to view the presale details.
             </div>
-            <button @click="submitEmail" class="btn btn-lg btn-primary">Submit</button>
+            <div v-show="store.state.connected" class="row">
+                <div class="col-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Max Available</h5>
+                            <h1 class="card-text text-center">{{ max }}</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Total Supply</h5>
+                            <h1 class="card-text text-center">{{ supply }}</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Balance</h5>
+                            <h1 class="card-text text-center">{{ balance }}</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div v-show="store.state.address.attributes.email && !store.state.address.attributes.email_verified_at">
-            <div class="mb-3">
-                <label for="verification" class="form-label">Enter your email verification code</label>
-                <input v-model="verification" type="text" class="form-control" id="verification">
-            </div>
-            <button @click="submitVerification" class="btn btn-lg btn-primary">Submit</button>
-        </div>
-        <div v-show="store.state.address.attributes.email && store.state.address.attributes.email_verified_at">
-            <div v-show="max > 0">
-                <input v-show="max > 1" v-model="quantity" :disabled="locked" :max="max" min="1" type="number" class="form-control mb-2" id="quantity">
-                <input v-model="quantity" type="hidden">
-                <button @click="purchase" :disabled="locked" class="btn btn-lg btn-primary">Purchase ({{ totalPrice / 1000000 }} USDC)</button>
-            </div>
-            <div v-show="max == 0">
-                No presales are currently available.
+        <div class="col">
+            <button v-show="!store.state.connected" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#connect">Connect Wallet</button>
+            <div v-show="store.state.connected">
+                <div v-show="!store.state.address.attributes.email">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Enter your email address</label>
+                        <input v-model="email" type="email" class="form-control" id="email">
+                    </div>
+                    <button @click="submitEmail" class="btn btn-lg btn-primary">Submit</button>
+                </div>
+                <div v-show="store.state.address.attributes.email && !store.state.address.attributes.email_verified_at">
+                    <div class="mb-3">
+                        <label for="verification" class="form-label">Enter your email verification code</label>
+                        <input v-model="verification" type="text" class="form-control" id="verification">
+                    </div>
+                    <button @click="submitVerification" class="btn btn-lg btn-primary">Submit</button>
+                </div>
+                <div v-show="store.state.address.attributes.email && store.state.address.attributes.email_verified_at">
+                    <div v-show="max > 0">
+                        <input v-show="max > 1" v-model="quantity" :disabled="locked" :max="max" min="1" type="number" class="form-control mb-2" id="quantity">
+                        <button @click="purchase" :disabled="locked" class="btn btn-lg btn-primary col-12">Purchase {{ quantity }} Presale NFT ({{ totalPrice / 1000000 }} USDC)</button>
+                    </div>
+                    <div v-show="max == 0">
+                        No presales are currently available.
+                    </div>
+                </div>
             </div>
         </div>
     </div>
