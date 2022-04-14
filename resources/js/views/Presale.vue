@@ -182,8 +182,8 @@
                 }
             });
 
-            watch(countdown.seconds, async function (currentValue, oldValue) {
-                if(oldValue > 0 && countdown.days == 0 && countdown.hours == 0 && countdown.minutes == 0 && countdown.seconds == 0) {
+            watch(countdown.value.seconds, async function (currentValue, oldValue) {
+                if(oldValue > 0 && countdown.value.days == 0 && countdown.value.hours == 0 && countdown.value.minutes == 0 && countdown.value.seconds == 0) {
                     getContractData();
                 }
             });
@@ -264,7 +264,6 @@
                     gas = Math.round(await contract.value.methods.buy(quantity.value).estimateGas({ from: store.state.account, gasPrice: gasPrice}) * 2);
                     const result = await contract.value.methods.buy(quantity.value).send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
                     store.commit("notice", "Transaction successful! TXID: " + result.blockHash);
-                    console.log(result);
                 } catch (error) {
                     store.commit("alert", error.message);
                 }
