@@ -1,4 +1,4 @@
 <template>
-    <h1>Vault</h1>
+    <h1>Swap</h1>
     Coming soon!
 </template>

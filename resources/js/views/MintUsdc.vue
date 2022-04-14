@@ -1,6 +1,8 @@
 <template>
     <h1>Mint USDC</h1>
-    <button v-show="!store.state.connected" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#connect">Connect Wallet</button>
+    <div v-show="!store.state.connected">
+        <p>Connect your wallet to view the presale details.</p>
+    </div>
     <div v-show="store.state.connected">
         <button @click="mint" :disabled="locked" class="btn btn-lg btn-primary">Mint USDC</button>
     </div>

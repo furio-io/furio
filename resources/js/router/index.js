@@ -1,20 +1,31 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import Home from "../views/Home.vue";
 import Presale from "../views/Presale.vue";
+import Swap from "../views/Swap.vue";
+import Vault from "../views/Vault.vue";
 import MintUsdc from "../views/MintUsdc";
 import NotFound from "../views/NotFound.vue";
 
 const routes = [
     {
         path: "/",
-        name: "Home",
-        component: Home,
+        name: "Presale",
+        component: Presale,
     },
     {
         path: "/presale",
         name: "Presale",
         component: Presale,
+    },
+    {
+        path: "/swap",
+        name: "Swap",
+        component: Swap,
+    },
+    {
+        path: "/vault",
+        name: "Vault",
+        component: Vault,
     },
     {
         path: "/mintusdc",

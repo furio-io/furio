@@ -1,65 +1,40 @@
 <template>
-    <!-- BEGIN NAVIGATION -->
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a href="https://furio.io" class="navbar-brand">Furio</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbar">
-                <!-- BEGIN PRIMARY NAVIGATION -->
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <router-link :to="{ name: 'Home' }" class="nav-link" active-class="active">Home</router-link>
-                    </li>
-                    <li class="nav-item">
-                        <router-link :to="{ name: 'Presale' }" class="nav-link" active-class="active">Presale</router-link>
-                    </li>
-                    <li class="nav-item">
-                        <router-link :to="{ name: 'MintUsdc' }" class="nav-link" active-class="active">Mint USDC</router-link>
-                    </li>
-                </ul>
-                <!-- END PRIMARY NAVIGATION -->
-                <div class="d-flex">
-                    <!-- BEGIN SECONDARY NAVIGATION -->
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="https://furio.io/whitepaper" target="_new">Whitepaper</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="https://www.moonpay.com/buy/matic" target="_new">Buy Matic</a>
-                        </li>
-                    </ul>
-                    <!-- END SECONDARY NAVIGATION -->
-                    <!-- BEGIN WALLET BUTTONS -->
-                    <Connect/>
-                    <!-- END WALLET BUTTONS -->
-                </div>
-            </div>
+    <div class="container">
+        <!-- BEGIN NAV -->
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <router-link :to="{ name: 'Presale' }" class="nav-link" active-class="active">Presale</router-link>
+            </li>
+            <li class="nav-item">
+                <router-link :to="{ name: 'Swap' }" class="nav-link" active-class="active">Swap</router-link>
+            </li>
+            <li class="nav-item">
+                <router-link :to="{ name: 'Vault' }" class="nav-link" active-class="active">Vault</router-link>
+            </li>
+            <li class="nav-item">
+                <router-link :to="{ name: 'MintUsdc' }" class="nav-link" active-class="active">Mint USDC</router-link>
+            </li>
+        </ul>
+        <!-- END NAV -->
+        <!-- BEGIN NOTICES -->
+        <div v-show="store.state.notice" class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ store.state.notice }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-    </nav>
-    <!-- END NAVIGATION -->
-
-    <!-- BEGIN NOTICES -->
-    <div v-show="store.state.notice" class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ store.state.notice }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div v-show="store.state.alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ store.state.alert }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div class="text-end mt-1 mb-1">
+            <Connect/>
+        </div>
+        <!-- END NOTICES -->
+        <!-- BEGIN PAGE CONTENT -->
+        <div class="container mt-5">
+            <router-view/>
+        </div>
+        <!-- END PAGE CONTENT -->
     </div>
-    <div v-show="store.state.alert" class="alert alert-danger alert-dismissible fade show" role="alert">
-        {{ store.state.alert }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <!-- END NOTICES -->
-
-    <!-- BEGIN PAGE CONTENT -->
-    <div class="container mt-5 mb-5">
-        <router-view/>
-    </div>
-    <!-- END PAGE CONTENT -->
-
-    <!-- BEGIN FOOTER CONTENT -->
-
-    <!-- END FOOTER CONTENT -->
 </template>
 
 <script>

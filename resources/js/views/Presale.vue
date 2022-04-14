@@ -4,7 +4,6 @@
         <div class="col-lg-6 mb-2">
             <div v-show="!store.state.connected">
                 <p>Connect your wallet to view the presale details.</p>
-                <button class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#connect">Connect Wallet</button>
             </div>
             <div v-show="store.state.connected">
                 <div v-show="max == 0">
