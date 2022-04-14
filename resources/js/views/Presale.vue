@@ -5,7 +5,7 @@
             <div v-show="!store.state.connected">
                 Connect your wallet to view the presale details.
             </div>
-            <div v-show="store.state.connected" class="row">
+            <div v-show="store.state.connected" class="row mb-3">
                 <div class="col-md-4 col-sm-6 mb-2">
                     <div class="card">
                         <div class="card-body">
@@ -33,8 +33,8 @@
                 <div class="col-md-4 col-sm-6 mb-2">
                     <div class="card">
                         <div class="card-body">
-                            <h6 class="card-title text-center">Balance</h6>
-                            <h3 class="card-text text-center">{{ balance }}</h3>
+                            <h6 class="card-title text-center">Max Available</h6>
+                            <h3 class="card-text text-center">{{ max }}</h3>
                         </div>
                     </div>
                 </div>
@@ -49,12 +49,13 @@
                 <div class="col-md-4 col-sm-6 mb-2">
                     <div class="card">
                         <div class="card-body">
-                            <h6 class="card-title text-center">Max Available</h6>
-                            <h3 class="card-text text-center">{{ max }}</h3>
+                            <h6 class="card-title text-center">Balance</h6>
+                            <h3 class="card-text text-center">{{ balance }}</h3>
                         </div>
                     </div>
                 </div>
             </div>
+            <button v-show="store.state.connected" @click="getContractData" :disabled="locked" class="btn btn-sm btn-primary col-12">Reload Contract Data</button>
         </div>
         <div class="col">
             <button v-show="!store.state.connected" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#connect">Connect Wallet</button>
@@ -201,6 +202,7 @@
                 verification,
                 submitEmail,
                 submitVerification,
+                getContractData,
                 purchase,
                 max,
                 quantity,
