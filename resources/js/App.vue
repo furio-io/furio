@@ -2,13 +2,16 @@
     <!-- BEGIN NAVIGATION -->
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
         <div class="container-fluid">
-            <router-link :to="{ name: 'Home' }" class="navbar-brand">Furio</router-link>
+            <a href="https://furio.io" class="navbar-brand">Furio</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbar">
                 <!-- BEGIN PRIMARY NAVIGATION -->
                 <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <router-link :to="{ name: 'Home' }" class="nav-link" active-class="active">Home</router-link>
+                    </li>
                     <li class="nav-item">
                         <router-link :to="{ name: 'Presale' }" class="nav-link" active-class="active">Presale</router-link>
                     </li>
@@ -24,7 +27,7 @@
                             <a class="nav-link" href="https://furio.io/whitepaper" target="_new">Whitepaper</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="https://youtu.be/TOJg308iREw" target="_new">Tutorial</a>
+                            <a class="nav-link" href="https://www.moonpay.com/buy/matic" target="_new">Buy Matic</a>
                         </li>
                     </ul>
                     <!-- END SECONDARY NAVIGATION -->
