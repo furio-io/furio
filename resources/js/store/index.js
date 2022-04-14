@@ -29,6 +29,7 @@ export default createStore({
         usdcAbi: null,
         presaleNftAddress: null,
         presaleNftAbi: null,
+        events: [],
     },
    mutations: {
        networkId(state, value) {
@@ -72,6 +73,9 @@ export default createStore({
        },
        presaleNftAbi(state, value) {
            state.presaleNftAbi = value;
+       },
+       event(state, value) {
+           state.events.push(value);
        },
    }
 });

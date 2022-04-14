@@ -80,7 +80,43 @@
                         <button @click="purchase" :disabled="locked" class="btn btn-lg btn-primary col-12">Purchase ({{ totalPrice / 1000000 }} USDC)</button>
                     </div>
                     <div v-show="max == 0">
-                        No presales are currently available.
+                        <div v-show="countdown.isRunning">
+                            <div class="row">
+                                <h3>{{ nextEvent }} starts in...</h3>
+                                <div class="col-sm-3">
+                                    <div class="card text-white bg-dark">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-center">Days</h6>
+                                            <h6 class="card-text text-center">{{ countdown.days }}</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="card text-white bg-dark">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-center">Hours</h6>
+                                            <h6 class="card-text text-center">{{ countdown.hours }}</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="card text-white bg-dark">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-center">Minutes</h6>
+                                            <h6 class="card-text text-center">{{ countdown.minutes }}</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="card text-white bg-dark">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-center">Seconds</h6>
+                                            <h6 class="card-text text-center">{{ countdown.seconds }}</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -90,6 +126,7 @@
 
 <script>
     import { computed, onMounted, ref, watch } from "vue";
+    import { useTimer } from "vue-timer-hook";
     import { useStore } from "vuex";
 
     export default {
@@ -107,6 +144,12 @@
             const locked = ref(false);
             const balance = ref(0);
             const ownedValue = ref(0);
+            const presaleOneStart = ref(0);
+            const presaleTwoStart = ref(0);
+            const presaleThreeStart = ref(0);
+            const claimStart = ref(0);
+            const countdown = ref(useTimer(0));
+            const nextEvent = ref(null);
 
             const connected = computed(() => {
                 return store.state.connected;
@@ -132,6 +175,16 @@
                 if(!max.value) {
                     getContractData();
                 }
+            });
+
+            watch(countdown.isExpired, async function (currentValue, oldValue) {
+                if(oldValue) {
+                    return;
+                }
+                if(!currentValue) {
+                    return;
+                }
+                getContractData();
             });
 
             async function submitEmail() {
@@ -174,6 +227,26 @@
                     price.value = await contract.value.methods.price().call();
                     balance.value = await contract.value.methods.balanceOf(store.state.account).call();
                     ownedValue.value = await contract.value.methods.ownedValue(store.state.account).call();
+                    presaleOneStart.value = await contract.value.methods.presaleOneStart().call();
+                    presaleTwoStart.value = await contract.value.methods.presaleTwoStart().call();
+                    presaleThreeStart.value = await contract.value.methods.presaleThreeStart().call();
+                    claimStart.value = await contract.value.methods.claimStart().call();
+                    if(claimStart.value > Date.now() / 1000) {
+                        nextEvent.value = "Claim";
+                        countdown.value.restart(claimStart.value * 1000);
+                    }
+                    if(presaleThreeStart.value > Date.now() / 1000) {
+                        nextEvent.value = "Presale Three";
+                        countdown.value.restart(presaleThreeStart.value * 1000);
+                    }
+                    if(presaleTwoStart.value > Date.now() / 1000) {
+                        nextEvent.value = "Presale Two";
+                        countdown.value.restart(presaleTwoStart.value * 1000);
+                    }
+                    if(presaleOneStart.value > Date.now() / 1000) {
+                        nextEvent.value = "Presale One";
+                        countdown.value.restart(presaleOneStart.value * 1000);
+                    }
                 } catch (error) {
                     store.commit("alert", error.message);
                 }
@@ -215,6 +288,8 @@
                 locked,
                 balance,
                 ownedValue,
+                countdown,
+                nextEvent,
             }
         }
 

@@ -54,6 +54,7 @@
     <!-- BEGIN PAGE CONTENT -->
     <div class="container mt-5 mb-5">
         <router-view/>
+        <events/>
     </div>
     <!-- END PAGE CONTENT -->
 
@@ -66,9 +67,13 @@
     import { onMounted } from "vue";
     import { useStore } from "vuex";
     import Connect from './components/Connect.vue';
+    import Events from './components/Events.vue';
 
     export default {
-        components: { Connect },
+        components: {
+            Connect,
+            Events,
+        },
         props: {
             networkId: String,
             networkName: String,

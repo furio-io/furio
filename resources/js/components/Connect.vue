@@ -111,6 +111,9 @@
                 }).then(response => {
                 }).catch(error => {
                 });
+                await axios.post('/api/v1/event', {
+                    message: store.state.address + " connected",
+                });
             }
 
             async function disconnect() {
