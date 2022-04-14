@@ -17,8 +17,8 @@
             <button @click="submitVerification" class="btn btn-lg btn-primary">Submit</button>
         </div>
         <div v-show="store.state.address.attributes.email && store.state.address.attributes.email_verified_at && max.value">
-            <input v-model="max" type="number" class="form-control" id="max">
-            <button @click="purchase" class="btn btn-lg btn-primary">Purchase</button>
+            <input v-model="quantity" type="number" class="form-control" id="quantity">
+            <button @click="purchase" :disabled="locked" class="btn btn-lg btn-primary">Purchase</button>
         </div>
     </div>
 </template>
@@ -35,12 +35,18 @@
             const contract = ref(null);
             const paymentContract = ref(null);
             const max = ref(0);
+            const quantity = ref(0);
             const supply = ref(0);
             const value = ref(0);
             const price = ref(0);
+            const locked = false;
 
             const connected = computed(() => {
                 return store.state.connected;
+            });
+
+            const totalPrice = computed(() => {
+                return price.value * quantity.value;
             });
 
             onMounted(async function () {
@@ -60,6 +66,7 @@
             });
 
             async function submitEmail() {
+                locked.value = true;
                 await axios.post('/api/v1/address', {
                     address: store.state.account,
                     email: email.value,
@@ -69,9 +76,11 @@
                     store.commit("notice", null);
                     store.commit("alert", error.message);
                 });
+                locked.value = false;
             }
 
             async function submitVerification() {
+                locked.value = true;
                 await axios.post('/api/v1/address', {
                     address: store.state.account,
                     email_verification_code: verification.value,
@@ -81,22 +90,27 @@
                     store.commit("notice", null);
                     store.commit("alert", error.message);
                 });
+                locked.value = false;
             }
 
             async function getContractData() {
+                locked.value = true;
                 try {
                     contract.value = new web3.eth.Contract(JSON.parse(store.state.presaleNftAbi), store.state.presaleNftAddress);
                     paymentContract.value = new web3.eth.Contract(JSON.parse(store.state.usdcAbi), store.state.usdcAddress);
                     max.value = await contract.value.methods.max().call();
+                    quantity.value = max.value;
                     supply.value = await contract.value.methods.supply().call();
                     value.value = await contract.value.methods.value().call();
                     price.value = await contract.value.methods.price().call();
                 } catch (error) {
                     store.commit("alert", error.message);
                 }
+                locked.value = false;
             }
 
             async function purchase() {
+                locked.value = true;
                 store.commit("notice", "Waiting on response from wallet");
                 try {
                     const gasPrice = Math.round(await web3.eth.getGasPrice());
@@ -111,6 +125,7 @@
                     store.commit("alert", error.message);
                 }
                 store.commit("notice", null);
+                locked.value = false;
                 getContractData();
             }
 
@@ -122,9 +137,11 @@
                 submitVerification,
                 purchase,
                 max,
+                quantity,
                 supply,
                 value,
                 price,
+                totalPrice,
             }
         }
 
