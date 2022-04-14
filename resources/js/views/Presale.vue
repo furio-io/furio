@@ -52,7 +52,7 @@
                 <div v-show="store.state.address.attributes.email && store.state.address.attributes.email_verified_at">
                     <div v-show="max > 0">
                         <input v-show="max > 1" v-model="quantity" :disabled="locked" :max="max" min="1" type="number" class="form-control mb-2" id="quantity">
-                        <button @click="purchase" :disabled="locked" class="btn btn-lg btn-primary col-12">Purchase {{ quantity }} Presale NFT ({{ totalPrice / 1000000 }} USDC)</button>
+                        <button @click="purchase" :disabled="locked" class="btn btn-lg btn-primary col-12">Purchase ({{ totalPrice / 1000000 }} USDC)</button>
                     </div>
                     <div v-show="max == 0">
                         No presales are currently available.
