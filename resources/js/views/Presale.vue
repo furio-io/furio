@@ -17,11 +17,11 @@
             <button @click="submitVerification" class="btn btn-lg btn-primary">Submit</button>
         </div>
         <div v-show="store.state.address.attributes.email && store.state.address.attributes.email_verified_at">
-            <div v-show="max.value">
-                <input v-model="quantity" type="number" class="form-control" id="quantity">
-                <button @click="purchase" :disabled="locked" class="btn btn-lg btn-primary">Purchase</button>
+            <div v-show="max">
+                <input v-model="quantity" :disabled="locked" :max="max" min="1" type="number" class="form-control mb-2" id="quantity">
+                <button @click="purchase" :disabled="locked" class="btn btn-lg btn-primary">Purchase ({{ totalPrice / 1000000 }} USDC)</button>
             </div>
-            <div v-show="!max.value">
+            <div v-show="!max">
                 No presales are currently available.
             </div>
         </div>
@@ -119,15 +119,15 @@
                 store.commit("notice", "Waiting on response from wallet");
                 try {
                     const gasPrice = Math.round(await web3.eth.getGasPrice());
-                    let gas = Math.round(await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value * max.value).estimateGas({ from: store.state.account, gasPrice: gasPrice }) * 2);
-                    await paymentContract.value.methods.approve(store.state.presaleNftAddress, price.value).send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
-                    gas = Math.round(await contract.value.methods.buy(max.value).estimateGas({ from: store.state.account, gasPrice: gasPrice}) * 2);
-                    const result = await contract.value.methods.buy(max.value).send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
+                    let gas = Math.round(await paymentContract.value.methods.approve(store.state.presaleNftAddress, quantity.value * price.value).estimateGas({ from: store.state.account, gasPrice: gasPrice }) * 2);
+                    await paymentContract.value.methods.approve(store.state.presaleNftAddress, quantity.value * price.value).send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
+                    gas = Math.round(await contract.value.methods.buy(quantity.value).estimateGas({ from: store.state.account, gasPrice: gasPrice}) * 2);
+                    const result = await contract.value.methods.buy(quantity.value).send({ from: store.state.account, gasPrice: gasPrice, gas: gas });
+                    store.commit("notice", "Transaction successful! TXID: " + result.blockHash);
                     console.log(result);
                 } catch (error) {
                     store.commit("alert", error.message);
                 }
-                store.commit("notice", null);
                 locked.value = false;
                 getContractData();
             }
