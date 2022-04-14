@@ -11,7 +11,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title text-center">Total Supply</h6>
-                            <h3 class="card-text text-center">{{ supply }}</h3>
+                            <h5 class="card-text text-center">{{ supply }}</h5>
                         </div>
                     </div>
                 </div>
@@ -19,7 +19,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title text-center">Value</h6>
-                            <h3 class="card-text text-center">{{ value / 1000000000000000000 }} $FUR</h3>
+                            <h5 class="card-text text-center">{{ value / 1000000000000000000 }} $FUR</h5>
                         </div>
                     </div>
                 </div>
@@ -27,7 +27,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title text-center">Price</h6>
-                            <h3 class="card-text text-center">{{ price / 1000000 }} USDC</h3>
+                            <h5 class="card-text text-center">{{ price / 1000000 }} USDC</h5>
                         </div>
                     </div>
                 </div>
@@ -35,7 +35,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title text-center">Max Available</h6>
-                            <h3 class="card-text text-center">{{ max }}</h3>
+                            <h5 class="card-text text-center">{{ max }}</h5>
                         </div>
                     </div>
                 </div>
@@ -43,7 +43,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title text-center">Owned Value</h6>
-                            <h3 class="card-text text-center">{{ ownedValue / 1000000000000000000 }} $FUR</h3>
+                            <h5 class="card-text text-center">{{ ownedValue / 1000000000000000000 }} $FUR</h5>
                         </div>
                     </div>
                 </div>
@@ -51,12 +51,12 @@
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title text-center">Balance</h6>
-                            <h3 class="card-text text-center">{{ balance }}</h3>
+                            <h5 class="card-text text-center">{{ balance }}</h5>
                         </div>
                     </div>
                 </div>
             </div>
-            <button v-show="store.state.connected" @click="getContractData" :disabled="locked" class="btn btn-sm btn-secondary col-12">Reload Contract Data</button>
+            <button v-show="store.state.connected" @click="getContractData" :disabled="locked" class="btn btn-sm btn-link col-12">Reload Contract Data</button>
         </div>
         <div class="col-md-6 mb-3">
             <div v-show="store.state.connected">
