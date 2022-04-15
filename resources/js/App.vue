@@ -2,32 +2,11 @@
     <div class="header pb-5">
         <div class="container">
             <!-- BEGIN NAV -->
-            <nav class="navbar navbar-expand pb-5 text-light">
+            <nav class="navbar pb-5 text-light">
                 <a class="navbar-brand" href="https://furio.io">
                     <img src="/images/furio-logo.svg" alt="Furio Logo" width="175">
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navcollapse" aria-controls="navcollapse" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navcollapse">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <router-link :to="{ name: 'Presale' }" class="nav-link" active-class="active">Presale</router-link>
-                        </li>
-                        <li class="nav-item">
-                            <router-link :to="{ name: 'Swap' }" class="nav-link" active-class="active">Swap</router-link>
-                        </li>
-                        <li class="nav-item">
-                            <router-link :to="{ name: 'Vault' }" class="nav-link" active-class="active">Vault</router-link>
-                        </li>
-                        <li class="nav-item">
-                            <router-link :to="{ name: 'MintUsdc' }" class="nav-link" active-class="active">Mint USDC</router-link>
-                        </li>
-                    </ul>
-                </div>
-                <div class="d-flex">
-                    <Connect/>
-                </div>
+                <Connect class="ms-auto"/>
             </nav>
         </div>
     </div>
@@ -47,9 +26,23 @@
     </div>
     <!-- END NOTICES -->
     <div class="container">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <router-link :to="{ name: 'Presale' }" class="nav-link" active-class="active">Presale</router-link>
+            </li>
+            <li class="nav-item">
+                <router-link :to="{ name: 'Swap' }" class="nav-link" active-class="active">Swap</router-link>
+            </li>
+            <li class="nav-item">
+                <router-link :to="{ name: 'Vault' }" class="nav-link" active-class="active">Vault</router-link>
+            </li>
+            <li class="nav-item">
+                <router-link :to="{ name: 'MintUsdc' }" class="nav-link" active-class="active">Mint USDC</router-link>
+            </li>
+        </ul>
         <!-- BEGIN PAGE CONTENT -->
-        <div class="container mt-5">
-            <router-view class="mb-5"/>
+        <div class="container py-5 px-5 bg-light text-dark">
+            <router-view class="mb-5 py-5"/>
         </div>
         <div class="mt-5 py-5">
             <h5 class="mb-3">Furio Rewards Responsibilty</h5>

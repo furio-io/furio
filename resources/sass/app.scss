@@ -1,25 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 $font-family-base: 'Montserrat', sans-serif;
 $headings-font-family: 'Furio';
-//$headings-color: #fff;
-$orange: #e77725;
-$dark-blue: #0e1f2f;
-$white: #f8faff;
-$black: #0a0a0a;
-$headings-color: $dark-blue;
-$body-color: $black;
-$danger: $orange;
-$dark: $dark-blue;
-$nav-link-color: $white;
-$nav-link-hover-color: $orange;
-$nav-link-font-size: 1.24em;
-$nav-link-padding-y: 1rem;
-$nav-link-padding-x: 3rem;
+$primary: #e77725;
+$card-color: #292929;
+$dark: #0e1f2f;
+$light: #efefef;
+$modal-backdrop-bg: $dark;
+$modal-backdrop-opacity: 0.9;
+$modal-content-color: $dark;
+$modal-content-bg: $light;
+$nav-tabs-link-active-bg: $light;
+$nav-tabs-link-color: $light;
+$nav-tabs-link-hover-bg: $light;
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 [v-cloak] > * { display: none; }
-.header {
+body {
     background-image: url("/images/background.jpg");
     background-position: center 0px;
     background-repeat: no-repeat;

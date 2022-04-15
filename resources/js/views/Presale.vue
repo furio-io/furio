@@ -10,79 +10,71 @@
                     <div v-show="countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0">
                         <div>{{ nextEvent }} starts in...</div>
                         <div class="card-group mb-3">
-                            <div class="card bg-light text-dark">
+                            <div class="card">
                                 <div class="card-body">
                                     <div class="card-title text-center">Days</div>
-                                    <div class="card-text text-center">{{ countdown.days }}</div>
+                                    <div class="card-text text-center"><strong>{{ countdown.days }}</strong></div>
                                 </div>
                             </div>
-                            <div class="card bg-light text-dark">
+                            <div class="card">
                                 <div class="card-body">
                                     <div class="card-title text-center">Hours</div>
-                                    <div class="card-text text-center">{{ countdown.hours }}</div>
+                                    <div class="card-text text-center"><strong>{{ countdown.hours }}</strong></div>
                                 </div>
                             </div>
-                            <div class="card bg-light text-dark">
+                            <div class="card">
                                 <div class="card-body">
                                     <div class="card-title text-center">Minutes</div>
-                                    <div class="card-text text-center">{{ countdown.minutes }}</div>
+                                    <div class="card-text text-center"><strong>{{ countdown.minutes }}</strong></div>
                                 </div>
                             </div>
-                            <div class="card bg-light text-dark">
+                            <div class="card">
                                 <div class="card-body">
                                     <div class="card-title text-center">Seconds</div>
-                                    <div class="card-text text-center">{{ countdown.seconds }}</div>
+                                    <div class="card-text text-center"><strong>{{ countdown.seconds }}</strong></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="row mb-3">
-                    <div class="col-md-6 col-lg-4 mb-2">
+                    <div class="card-group">
                         <div class="card">
                             <div class="card-body">
-                                <div class="card-title text-center">Remaining Supply</div>
-                                <div class="card-text text-center">{{ supply }}</div>
+                                <div class="card-title text-center"><small>Remaining Supply</small></div>
+                                <div class="card-text text-center"><strong>{{ supply }}</strong></div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-title text-center"><small>Value Per NFT</small></div>
+                                <div class="card-text text-center"><strong>{{ value / 1000000000000000000 }} $FUR</strong></div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-title text-center"><small>Price Per NFT</small></div>
+                                <div class="card-text text-center"><strong>{{ price / 1000000 }} USDC</strong></div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 col-lg-4 mb-2">
+                    <div class="card-group">
                         <div class="card">
                             <div class="card-body">
-                                <div class="card-title text-center">Value Per NFT</div>
-                                <div class="card-text text-center">{{ value / 1000000000000000000 }} $FUR</div>
+                                <div class="card-title text-center"><small>Max Available</small></div>
+                                <div class="card-text text-center"><strong>{{ max }}</strong></div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <div class="card-title text-center">Price Per NFT</div>
-                                <div class="card-text text-center">{{ price / 1000000 }} USDC</div>
+                                <div class="card-title text-center"><small>Owned Value</small></div>
+                                <div class="card-text text-center"><strong>{{ ownedValue / 1000000000000000000 }} $FUR</strong></div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <div class="card-title text-center">Max Available</div>
-                                <div class="card-text text-center">{{ max }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="card-title text-center">Owned Value</div>
-                                <div class="card-text text-center">{{ ownedValue / 1000000000000000000 }} $FUR</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="card-title text-center">Balance</div>
-                                <div class="card-text text-center">{{ balance }}</div>
+                                <div class="card-title text-center"><small>Balance</small></div>
+                                <div class="card-text text-center"><strong>{{ balance }}</strong></div>
                             </div>
                         </div>
                     </div>
