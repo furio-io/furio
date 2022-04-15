@@ -1,3 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+$font-family-base: 'Montserrat', sans-serif;
+$headings-font-family: 'Furio';
+//$headings-color: #fff;
+$orange: #e77725;
+$dark-blue: #0e1f2f;
+$white: #f8faff;
+$black: #0a0a0a;
+$headings-color: $dark-blue;
+$body-color: $black;
+$danger: $orange;
+$dark: $dark-blue;
+$nav-link-color: $white;
+$nav-link-hover-color: $orange;
+$nav-link-font-size: 1.24em;
+$nav-link-padding-y: 1rem;
+$nav-link-padding-x: 3rem;
+
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 [v-cloak] > * { display: none; }
+.header {
+    background-image: url("/images/background.jpg");
+    background-position: center 0px;
+    background-repeat: no-repeat;
+}
+@font-face{
+    font-family:"Furio";
+    src: url("../fonts/furio.woff") format("woff");
+    font-weight:normal;
+    font-style:normal;
+}

@@ -12,26 +12,26 @@
                         <div class="card-group mb-3">
                             <div class="card bg-light text-dark">
                                 <div class="card-body">
-                                    <h6 class="card-title text-center">Days</h6>
-                                    <h6 class="card-text text-center">{{ countdown.days }}</h6>
+                                    <div class="card-title text-center">Days</div>
+                                    <div class="card-text text-center">{{ countdown.days }}</div>
                                 </div>
                             </div>
                             <div class="card bg-light text-dark">
                                 <div class="card-body">
-                                    <h6 class="card-title text-center">Hours</h6>
-                                    <h6 class="card-text text-center">{{ countdown.hours }}</h6>
+                                    <div class="card-title text-center">Hours</div>
+                                    <div class="card-text text-center">{{ countdown.hours }}</div>
                                 </div>
                             </div>
                             <div class="card bg-light text-dark">
                                 <div class="card-body">
-                                    <h6 class="card-title text-center">Minutes</h6>
-                                    <h6 class="card-text text-center">{{ countdown.minutes }}</h6>
+                                    <div class="card-title text-center">Minutes</div>
+                                    <div class="card-text text-center">{{ countdown.minutes }}</div>
                                 </div>
                             </div>
                             <div class="card bg-light text-dark">
                                 <div class="card-body">
-                                    <h6 class="card-title text-center">Seconds</h6>
-                                    <h6 class="card-text text-center">{{ countdown.seconds }}</h6>
+                                    <div class="card-title text-center">Seconds</div>
+                                    <div class="card-text text-center">{{ countdown.seconds }}</div>
                                 </div>
                             </div>
                         </div>
@@ -41,48 +41,48 @@
                     <div class="col-md-6 col-lg-4 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <h6 class="card-title text-center">Remaining Supply</h6>
-                                <h5 class="card-text text-center">{{ supply }}</h5>
+                                <div class="card-title text-center">Remaining Supply</div>
+                                <div class="card-text text-center">{{ supply }}</div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-4 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <h6 class="card-title text-center">Value Per NFT</h6>
-                                <h5 class="card-text text-center">{{ value / 1000000000000000000 }} $FUR</h5>
+                                <div class="card-title text-center">Value Per NFT</div>
+                                <div class="card-text text-center">{{ value / 1000000000000000000 }} $FUR</div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-4 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <h6 class="card-title text-center">Price Per NFT</h6>
-                                <h5 class="card-text text-center">{{ price / 1000000 }} USDC</h5>
+                                <div class="card-title text-center">Price Per NFT</div>
+                                <div class="card-text text-center">{{ price / 1000000 }} USDC</div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-4 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <h6 class="card-title text-center">Max Available</h6>
-                                <h5 class="card-text text-center">{{ max }}</h5>
+                                <div class="card-title text-center">Max Available</div>
+                                <div class="card-text text-center">{{ max }}</div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-4 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <h6 class="card-title text-center">Owned Value</h6>
-                                <h5 class="card-text text-center">{{ ownedValue / 1000000000000000000 }} $FUR</h5>
+                                <div class="card-title text-center">Owned Value</div>
+                                <div class="card-text text-center">{{ ownedValue / 1000000000000000000 }} $FUR</div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-4 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <h6 class="card-title text-center">Balance</h6>
-                                <h5 class="card-text text-center">{{ balance }}</h5>
+                                <div class="card-title text-center">Balance</div>
+                                <div class="card-text text-center">{{ balance }}</div>
                             </div>
                         </div>
                     </div>

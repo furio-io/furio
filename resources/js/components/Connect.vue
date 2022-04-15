@@ -1,9 +1,9 @@
 <template>
     <!-- CONNECT BUTTON -->
-    <button v-show="!store.state.connected" class="btn btn-sm btn-primary mx-1" data-bs-toggle="modal" data-bs-target="#connect">Connect Wallet</button>
+    <button v-show="!store.state.connected" class="btn btn-lg btn-danger mx-1 text-light" data-bs-toggle="modal" data-bs-target="#connect">CONNECT</button>
     <!-- END CONNECT BUTTON -->
     <!-- DISCONNECT BUTTON -->
-    <button v-show="store.state.connected" @click="disconnect" class="btn btn-sm btn-danger mx-1">Disconnect {{ shortAccount }}</button>
+    <button v-show="store.state.connected" @click="disconnect" class="btn btn-sm btn-danger mx-1">DISCONNECT {{ shortAccount }}</button>
     <!-- END DISCONNECT BUTTON -->
     <!-- CONNECT WALLET MODAL -->
     <div class="modal fade" id="connect" tabindex="-1" aria-labelledby="connectLabel" aria-hidden="true">

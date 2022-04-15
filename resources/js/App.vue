@@ -1,37 +1,59 @@
 <template>
-    <div class="container">
-        <!-- BEGIN NAV -->
-        <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <router-link :to="{ name: 'Presale' }" class="nav-link" active-class="active">Presale</router-link>
-            </li>
-            <li class="nav-item">
-                <router-link :to="{ name: 'Swap' }" class="nav-link" active-class="active">Swap</router-link>
-            </li>
-            <li class="nav-item">
-                <router-link :to="{ name: 'Vault' }" class="nav-link" active-class="active">Vault</router-link>
-            </li>
-            <li class="nav-item">
-                <router-link :to="{ name: 'MintUsdc' }" class="nav-link" active-class="active">Mint USDC</router-link>
-            </li>
-        </ul>
-        <!-- END NAV -->
-        <!-- BEGIN NOTICES -->
-        <div v-show="store.state.notice" class="alert alert-success alert-dismissible fade show" role="alert">
+    <div class="header pb-5">
+        <div class="container">
+            <!-- BEGIN NAV -->
+            <nav class="navbar navbar-expand pb-5 text-light">
+                <a class="navbar-brand" href="https://furio.io">
+                    <img src="/images/furio-logo.svg" alt="Furio Logo" width="175">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navcollapse" aria-controls="navcollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navcollapse">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <router-link :to="{ name: 'Presale' }" class="nav-link" active-class="active">Presale</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link :to="{ name: 'Swap' }" class="nav-link" active-class="active">Swap</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link :to="{ name: 'Vault' }" class="nav-link" active-class="active">Vault</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link :to="{ name: 'MintUsdc' }" class="nav-link" active-class="active">Mint USDC</router-link>
+                        </li>
+                    </ul>
+                </div>
+                <div class="d-flex">
+                    <Connect/>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <!-- END NAV -->
+    <!-- BEGIN NOTICES -->
+    <div v-show="store.state.notice" class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="container py-3">
             {{ store.state.notice }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <div v-show="store.state.alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+    </div>
+    <div v-show="store.state.alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="container py-3">
             {{ store.state.alert }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <div class="text-end mt-1 mb-1">
-            <Connect/>
-        </div>
-        <!-- END NOTICES -->
+    </div>
+    <!-- END NOTICES -->
+    <div class="container">
         <!-- BEGIN PAGE CONTENT -->
         <div class="container mt-5">
-            <router-view/>
+            <router-view class="mb-5"/>
+        </div>
+        <div class="mt-5 py-5">
+            <h5 class="mb-3">Furio Rewards Responsibilty</h5>
+            <p>Participation within the Furio Ecosystem is entirely at your own discretion. Please conduct your own research and read all of the available information. Remember that crypto currencies and the performance of projects carry no guarantees and you should not take on unnecessary risks. Material published by Furio should not be considered as financial advice.</p>
         </div>
         <!-- END PAGE CONTENT -->
     </div>
