@@ -26,7 +26,7 @@
     </div>
     <!-- END NOTICES -->
     <div class="container">
-        <ul class="nav nav-tabs">
+        <ul class="nav nav-tabs border-0">
             <li class="nav-item">
                 <router-link :to="{ name: 'Presale' }" class="nav-link" active-class="active">Presale</router-link>
             </li>
@@ -41,7 +41,7 @@
             </li>
         </ul>
         <!-- BEGIN PAGE CONTENT -->
-        <div class="container py-5 px-5 bg-light text-dark">
+        <div class="container py-5 px-5 bg-light text-dark rounded">
             <router-view class="mb-5 py-5"/>
         </div>
         <div class="mt-5 py-5">
