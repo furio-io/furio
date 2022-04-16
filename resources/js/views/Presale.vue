@@ -167,6 +167,7 @@
 
             watch(countdown.value.seconds, async function (currentValue, oldValue) {
                 if(oldValue > 0 && countdown.value.days == 0 && countdown.value.hours == 0 && countdown.value.minutes == 0 && countdown.value.seconds == 0) {
+                    alert(currentValue);
                     getSettings();
                     getContractData();
                 }
