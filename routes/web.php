@@ -13,6 +13,7 @@ Route::group([
     Route::post('session', 'UpdateSession');
     Route::post('logout', 'Logout');
     Route::post('event', 'Event');
+    Route::get('settings', 'Settings');
 });
 // CATCHALL FOR SINGLE PAGE APPLICATION
 Route::get('{any}', 'App')->where('any', '.*');

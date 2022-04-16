@@ -11,17 +11,7 @@
     </head>
     <body class="bg-dark text-light">
         <div id="app">
-            <App
-                tag-manager-container-id="{{ $tagManagerContainerId }}"
-                network-id="{{ $networkId }}"
-                network-name="{{ $networkName }}"
-                rpc="{{ $rpc }}"
-                recaptcha="{{ $recaptcha }}"
-                usdc-address="{{ $usdcAddress }}"
-                usdc-abi="{{ $usdcAbi }}"
-                presale-nft-address="{{ $presaleNftAddress }}"
-                presale-nft-abi="{{ $presaleNftAbi }}"
-            />
+            <App/>
         </div>
         <script src="{{ mix('js/main.js') }}"></script>
     </body>

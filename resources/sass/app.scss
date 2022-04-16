@@ -2,16 +2,21 @@
 $font-family-base: 'Montserrat', sans-serif;
 $headings-font-family: 'Furio';
 $primary: #e77725;
-$card-color: #292929;
-$dark: #0e1f2f;
+$secondary: #6c757d;
+$success: #198754;
+$danger: #dc3545;
+$warning: #ffc107;
+$info: #0dcaf0;
 $light: #efefef;
+$dark: #0e1f2f;
+$card-color: #292929;
 $modal-backdrop-bg: $dark;
 $modal-backdrop-opacity: 0.9;
 $modal-content-color: $dark;
 $modal-content-bg: $light;
 $nav-tabs-link-active-bg: $light;
-$nav-tabs-link-color: $light;
-$nav-tabs-link-hover-bg: $light;
+$nav-link-hover-color: $light;
+$nav-link-color: $info;
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';

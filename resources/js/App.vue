@@ -50,6 +50,30 @@
         </div>
         <!-- END PAGE CONTENT -->
     </div>
+    <!-- START FOOTER -->
+    <div class="border-top border-secondary pt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 pe-5">
+                    <img src="/images/furio-logo.svg" alt="Furio Logo" class="img-fluid">
+                    <p class="mt-4">Decentralised Finance</p>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="border-bottom border-primary pb-3">Contact Us</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a class="nav-link" href="mailto:info@furio.io">info@furio.io</a></li>
+                        <li class="nav-item"><a class="nav-link" href="mailto:partners@furio.io">partners@furio.io</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="border-bottom border-primary pb-3">Useful Links</h5>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="border-bottom border-primary pb-3">Connect</h5>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -61,33 +85,12 @@
         components: {
             Connect,
         },
-        props: {
-            networkId: String,
-            networkName: String,
-            rpc: String,
-            recaptcha: String,
-            usdcAddress: String,
-            usdcAbi: String,
-            presaleNftAddress: String,
-            presaleNftAbi: String,
-        },
-        setup(props) {
+        setup() {
             const store = useStore();
 
             onMounted(async function () {
-                store.commit("networkId", props.networkId);
-                store.commit("networkName", props.networkName);
-                store.commit("rpc", props.rpc);
-                store.commit("recaptcha", props.recaptcha);
-                store.commit("usdcAddress", props.usdcAddress);
-                store.commit("usdcAbi", props.usdcAbi);
-                store.commit("presaleNftAddress", props.presaleNftAddress);
-                store.commit("presaleNftAbi", props.presaleNftAbi);
-                await axios.get('/api/v1/session').then(response => {
-                    store.commit("wallet", response.data.wallet);
-                    store.commit("account", response.data.account);
-                    store.commit("address", response.data.address);
-                    //store.commit("connected", response.data.connected);
+                await axios.get("/api/v1/settings").then(response => {
+                    store.commit("settings", response.data);
                 }).catch(error => {
                     store.commit("alert", error.message);
                 });

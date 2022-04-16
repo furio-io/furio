@@ -1,6 +1,6 @@
 <template>
     <!-- CONNECT BUTTON -->
-    <button v-show="!store.state.connected" class="btn btn-lg btn-primary text-light rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#connect">CONNECT</button>
+    <button v-show="!store.state.connected" @click="getSettings" class="btn btn-lg btn-primary text-light rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#connect">CONNECT</button>
     <!-- END CONNECT BUTTON -->
     <!-- DISCONNECT BUTTON -->
     <button v-show="store.state.connected" @click="disconnect" class="btn btn-sm btn-secondary rounded-pill">DISCONNECT {{ shortAccount }}</button>
@@ -48,6 +48,14 @@
                     return '';
                 }
             });
+
+            async function getSettings() {
+                await axios.get("/api/v1/settings").then(response => {
+                    store.commit("settings", response.data);
+                }).catch(error => {
+                    store.commit("alert", error.message);
+                });
+            }
 
             async function metamask() {
                 store.commit("wallet", "metamask");
@@ -118,13 +126,13 @@
                     wallet: store.state.wallet,
                     account: store.state.account,
                     address: store.state.address,
-                    connected: store.state.connected,
                 }).then(response => {
                 }).catch(error => {
                 });
                 await axios.post('/api/v1/event', {
                     message: store.state.address + " connected",
                 });
+                getSettings();
             }
 
             async function disconnect() {
@@ -149,15 +157,13 @@
                 });
                 store.commit("connected", false);
                 await axios.post('/api/v1/logout');
-            }
-
-            async function getSettings() {
-
+                getSettings();
             }
 
             return {
                 store,
                 shortAccount,
+                getSettings,
                 metamask,
                 walletconnect,
                 disconnect,
