@@ -12,7 +12,7 @@
     },
     "devDependencies": {
         "@analytics/google-tag-manager": "^0.5.2",
-        "@fortawesome/fontawesome-free": "^6.0.0",
+        "@fortawesome/fontawesome-free": "^6.1.1",
         "@nomiclabs/hardhat-ethers": "^2.0.5",
         "@nomiclabs/hardhat-etherscan": "^3.0.3",
         "@nomiclabs/hardhat-waffle": "^2.0.3",

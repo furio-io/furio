@@ -24,6 +24,7 @@ Homestead.yaml
 /public/js
 /public/css
 /public/mix-manifest.json
+/public/fonts
 /storage/*.key
 /vendor
 .env.backup
