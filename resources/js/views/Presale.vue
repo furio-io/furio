@@ -167,9 +167,18 @@
 
             watch(countdown.value.seconds, async function (currentValue, oldValue) {
                 if(oldValue > 0 && countdown.value.days == 0 && countdown.value.hours == 0 && countdown.value.minutes == 0 && countdown.value.seconds == 0) {
+                    getSettings();
                     getContractData();
                 }
             });
+
+            async function getSettings() {
+                await axios.get("/api/v1/settings").then(response => {
+                    store.commit("settings", response.data);
+                }).catch(error => {
+                    store.commit("alert", error.message);
+                });
+            }
 
             async function submitEmail() {
                 locked.value = true;
